@@ -37,12 +37,6 @@ try:
 except :
     __has_salt = False
 
-try:
-    from salt.utils import which as _find_executable
-except:
-    from distutils.spawn import _find_executable
-
-
 
 class Error(Exception):
     """
