@@ -50,7 +50,6 @@ setup(name='ceph_cfg',
         ],
 
     scripts=[],
-    data_files=[('share/doc/ceph-cfg-%s' % (version),['README.md','LICENSE','CHANGELOG.rst'])],
     tests_require=[
         'coverage >= 3.0',
         'nose >= 0.10.0',
