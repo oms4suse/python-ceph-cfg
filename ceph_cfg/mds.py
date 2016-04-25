@@ -29,6 +29,8 @@ class mds_ctrl(rados_client.ctrl_rados_client):
     def __init__(self, **kwargs):
         super(mds_ctrl, self).__init__(**kwargs)
         self.service_name = "ceph-mds"
+        # Set path to mds binary
+        self.path_service_bin = constants._path_ceph_mds
         self.mds_name = kwargs.get("name")
         self.port = kwargs.get("port")
         self.addr = kwargs.get("addr")
@@ -68,6 +70,7 @@ class mds_ctrl(rados_client.ctrl_rados_client):
 
 
     def prepare(self):
+        self.service_available()
         path_bootstrap_keyring = keyring._get_path_keyring_mds(self.model.cluster_name)
         if not os.path.isfile(path_bootstrap_keyring):
             raise Error("Keyring not found at %s" % (path_bootstrap_keyring))

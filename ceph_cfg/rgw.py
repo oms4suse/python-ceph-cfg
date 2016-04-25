@@ -29,6 +29,8 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
     def __init__(self, **kwargs):
         super(rgw_ctrl, self).__init__(**kwargs)
         self.service_name = "ceph-radosgw"
+        # Set path to rgw binary
+        self.path_service_bin = constants._path_ceph_rgw
         self.rgw_name = kwargs.get("name")
 
 
@@ -96,6 +98,7 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
         missing_pools = self.rgw_pools_missing()
         if len(missing_pools) > 0:
             raise Error("Pools missing: %s" % (", ".join(missing_pools)))
+        self.service_available()
         self._set_rgw_path_lib()
         path_bootstrap_keyring = keyring._get_path_keyring_rgw(self.model.cluster_name)
         if not os.path.isfile(path_bootstrap_keyring):

@@ -26,11 +26,20 @@ class ctrl_rados_client(object):
     Super class.
     """
     def __init__(self, **kwargs):
+        # The path to the service binary
+        self.path_service_bin = None
         # what we are starting
         self.ceph_client_id = kwargs.get("name")
         self.service_name = None
         self.model = model.model(**kwargs)
         self.model.init = "systemd"
+
+
+    def service_available(self):
+        if self.path_service_bin is None:
+            msg = "Can not setup '%s' as binary not found" % (self.service_name)
+            log.error(msg)
+            raise Error(msg)
 
 
     def update(self):
@@ -59,6 +68,7 @@ class ctrl_rados_client(object):
             raise Error("self.ceph_client_id not specified")
         if self.service_name == None:
             raise Error("self.service_name not specified")
+        self.service_available()
         arguments = {
             'identifier' : self.ceph_client_id,
             'service' : self.service_name,
