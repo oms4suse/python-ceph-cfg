@@ -88,7 +88,7 @@ class model_updater():
         self.model = model
 
     def hostname_refresh(self):
-        self.model.hostname = platform.node()
+        self.model.hostname = platform.node().split('.')[0]
 
 
     def defaults_refresh(self):
@@ -348,7 +348,7 @@ class model_updater():
 
         for mon_split in mon_initial_members_name_raw.split(","):
             mon_initial_members_name_cleaned.append(mon_split.strip())
-        hostname = platform.node()
+        hostname = platform.node().split('.')[0]
 
         try:
             index = mon_initial_members_name_cleaned.index(hostname)
