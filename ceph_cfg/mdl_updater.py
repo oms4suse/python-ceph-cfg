@@ -127,6 +127,8 @@ class model_updater():
         """
         Get lsblk version as this is older on RHEL 7.2
         """
+        if constants._path_lsblk is None:
+            raise Error("Could not executable 'lsblk'")
         arguments = [ constants._path_lsblk, "--version" ]
         output = utils.execute_local_command(arguments)
         if output["retcode"] != 0:
@@ -191,6 +193,8 @@ class model_updater():
             salt '*' sesceph.partitions_all
         '''
         part_map = {}
+        if constants._path_lsblk is None:
+            raise Error("Could not executable 'lsblk'")
         cmd = [ constants._path_lsblk] + self._lsblk_arguements()
         output = utils.execute_local_command(cmd)
         if output['retcode'] != 0:
