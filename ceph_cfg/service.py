@@ -106,6 +106,10 @@ class init_system(object):
         return self._init_type_implementation.on_boot_disable(**kwargs)
 
 class init_system_systemd():
+    def __init__(self):
+        if constants._path_systemctl is None:
+            raise Error("Could not executable 'systemctl'")
+
 
     def _get_systemctl_name(self, **kwargs):
         service = kwargs.get("service")
