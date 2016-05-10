@@ -236,6 +236,8 @@ class mon_implementation_base(object):
         cluster_name
             Set the cluster name. Defaults to "ceph".
         """
+        if constants._path_ceph_mon is None:
+            raise Error("Could not executable 'ceph-mon'")
 
         u = mdl_updater.model_updater(self.model)
         u.hostname_refresh()
