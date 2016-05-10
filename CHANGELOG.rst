@@ -1,3 +1,7 @@
+0.1.1
+-----
+* Raise errors on missing executables.
+
 0.1.0
 -----
 * Change code base to a library.
