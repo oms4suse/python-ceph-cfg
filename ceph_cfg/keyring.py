@@ -90,6 +90,10 @@ class keyring_implementation_base(object):
             secret: The base64 secret to create keyring from, if this is set we will use this secret
                     instead to create the keyring, otherwise authtool itself will generate one
             extra_args: any other extra arguments to be passed to ceph authtool"""
+
+        if constants._path_ceph_authtool is None:
+            raise Error("Could not executable 'ceph-authtool'")
+
         args=[constants._path_ceph_authtool, "-n", keyring_name, "--create-keyring", keyring_path]
 
         if secret:
