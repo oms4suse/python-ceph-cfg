@@ -108,7 +108,7 @@ class init_system(object):
 class init_system_systemd():
     def __init__(self):
         if constants._path_systemctl is None:
-            raise Error("Could not executable 'systemctl'")
+            raise Error("Could not find executable 'systemctl'")
 
 
     def _get_systemctl_name(self, **kwargs):
