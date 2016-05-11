@@ -16,6 +16,7 @@ import presenter
 import utils
 import constants
 import service
+import util_which
 
 
 log = logging.getLogger(__name__)
@@ -236,7 +237,7 @@ class mon_implementation_base(object):
         cluster_name
             Set the cluster name. Defaults to "ceph".
         """
-        if constants._path_ceph_mon is None:
+        if util_which.which_ceph_mon.path is None:
             raise Error("Could not find executable 'ceph-mon'")
 
         u = mdl_updater.model_updater(self.model)
@@ -276,7 +277,7 @@ class mon_implementation_base(object):
             if q.mon_active():
                 return True
             arguments = [
-                constants._path_systemctl,
+                util_which.which_systemctl.path,
                 "restart",
                 "ceph-mon@%s" % (self.model.hostname)
                 ]
@@ -310,7 +311,7 @@ class mon_implementation_base(object):
             self._create_monmap(path_monmap)
             os.chown(path_monmap, self.uid, self.gid)
             arguments = [
-                constants._path_ceph_authtool,
+                util_which.which_ceph_authtool.path,
                 "--create-keyring",
                 key_path,
                 "--import-keyring",
@@ -325,7 +326,7 @@ class mon_implementation_base(object):
                     output["stderr"]
                     ))
             arguments = [
-                constants._path_ceph_authtool,
+                util_which.which_ceph_authtool.path,
                 key_path,
                 "--import-keyring",
                 path_admin_keyring,
@@ -350,7 +351,7 @@ class mon_implementation_base(object):
                 os.chown(path_mon_dir, self.uid, self.gid)
             # now do install
             arguments = [
-                    constants._path_ceph_mon,
+                    util_which.which_ceph_mon.path,
                     "--mkfs",
                     "-i",
                     self.model.hostname,
