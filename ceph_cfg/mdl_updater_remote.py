@@ -8,9 +8,9 @@ import shlex
 
 # Local imports
 import keyring
-import constants
 import utils
 import mdl_query
+import util_which
 
 
 log = logging.getLogger(__name__)
@@ -61,7 +61,7 @@ class model_updater_remote():
                 continue
             keyring_identity = keyring_obj.keyring_identity_get()
             arguments = [
-                constants._path_ceph,
+                util_which.which_ceph.path,
                 '--connect-timeout',
                 '5',
                 "--keyring",
@@ -90,7 +90,7 @@ class model_updater_remote():
         This is not normally needed as connect method has updated this information
         """
         prefix_arguments = [
-            constants._path_ceph
+            util_which.which_ceph.path
         ]
         postfix_arguments = [
             "-f",
@@ -113,7 +113,7 @@ class model_updater_remote():
 
     def auth_list(self):
         prefix_arguments = [
-            constants._path_ceph
+            util_which.which_ceph.path
         ]
         postfix_arguments = [
             "auth",
@@ -203,7 +203,7 @@ class model_updater_remote():
 
     def pool_list(self):
         prefix_arguments = [
-            constants._path_ceph
+            util_which.which_ceph.path
         ]
         postfix_arguments = [
             "-f",
@@ -235,7 +235,7 @@ class model_updater_remote():
         er_profile = kwargs.get("erasure_code_profile")
         crush_ruleset_name = kwargs.get("crush_ruleset")
         prefix_arguments = [
-            constants._path_ceph
+            util_which.which_ceph.path
         ]
         postfix_arguments = [
             'osd',
@@ -271,7 +271,7 @@ class model_updater_remote():
         if not name in self.model.pool_list.keys():
             return True
         prefix_arguments = [
-            constants._path_ceph
+            util_which.which_ceph.path
         ]
         postfix_arguments = [
             'osd',
