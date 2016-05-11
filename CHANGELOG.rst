@@ -1,3 +1,7 @@
+0.1.2
+-----
+* memoize the paths for executables only when they are found
+
 0.1.1
 -----
 * Raise errors on missing executables.
