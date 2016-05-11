@@ -9,6 +9,7 @@ import os.path
 import utils
 import mdl_query
 import constants
+import util_which
 
 
 log = logging.getLogger(__name__)
@@ -91,10 +92,11 @@ class keyring_implementation_base(object):
                     instead to create the keyring, otherwise authtool itself will generate one
             extra_args: any other extra arguments to be passed to ceph authtool"""
 
-        if constants._path_ceph_authtool is None:
-            raise Error("Could not find executable 'ceph-authtool'")
-
-        args=[constants._path_ceph_authtool, "-n", keyring_name, "--create-keyring", keyring_path]
+        args=[
+            util_which.which_ceph_authtool.path,
+            "-n", keyring_name,
+            "--create-keyring", keyring_path
+            ]
 
         if secret:
             args += ["--add-key", secret.strip()]

@@ -11,6 +11,7 @@ import ConfigParser
 # local modules
 import constants
 import utils
+import util_which
 
 
 log = logging.getLogger(__name__)
@@ -127,9 +128,7 @@ class model_updater():
         """
         Get lsblk version as this is older on RHEL 7.2
         """
-        if constants._path_lsblk is None:
-            raise Error("Could not find executable 'lsblk'")
-        arguments = [ constants._path_lsblk, "--version" ]
+        arguments = [ util_which.which_lsblk.path, "--version" ]
         output = utils.execute_local_command(arguments)
         if output["retcode"] != 0:
             raise Error("Failed executing '%s' Error rc=%s, stdout=%s stderr=%s" % (
@@ -193,9 +192,7 @@ class model_updater():
             salt '*' sesceph.partitions_all
         '''
         part_map = {}
-        if constants._path_lsblk is None:
-            raise Error("Could not find executable 'lsblk'")
-        cmd = [ constants._path_lsblk] + self._lsblk_arguements()
+        cmd = [ util_which.which_lsblk.path ] + self._lsblk_arguements()
         output = utils.execute_local_command(cmd)
         if output['retcode'] != 0:
             raise Error("Failed running: lsblk --ascii --output-all")

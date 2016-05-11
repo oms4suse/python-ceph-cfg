@@ -8,7 +8,7 @@ import os
 import platform
 import json
 import shutil
-import constants
+import util_which
 
 # local modules
 import utils
@@ -27,16 +27,6 @@ import keyring_use
 
 log = logging.getLogger(__name__)
 
-__virtualname__ = 'ceph'
-
-__has_salt = True
-
-try:
-    import salt.client
-    import salt.config
-except :
-    __has_salt = False
-
 
 class Error(Exception):
     """
@@ -46,13 +36,6 @@ class Error(Exception):
     def __str__(self):
         doc = self.__doc__.strip()
         return ': '.join([doc] + [str(a) for a in self.args])
-
-
-def __virtual__():
-    if not constants._path_lsblk:
-        log.info("Error 'lsblk' command not find.")
-        return False
-    return __virtualname__
 
 
 def partition_list():
@@ -149,7 +132,7 @@ def _update_partition(action, dev, description):
 
     utils.execute_local_command(
         [
-             constants._path_partprobe,
+             util_which.which_partprobe.path,
              dev,
         ],
     )
@@ -185,7 +168,7 @@ def zap(dev = None, **kwargs):
 
         utils.execute_local_command(
             [
-                constants._path_sgdisk,
+                util_which.which_sgdisk.path,
                 '--zap-all',
                 '--',
                 dev,
@@ -193,7 +176,7 @@ def zap(dev = None, **kwargs):
         )
         utils.execute_local_command(
             [
-                constants._path_sgdisk,
+                util_which.which_sgdisk.path,
                 '--clear',
                 '--mbrtogpt',
                 '--',

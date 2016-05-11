@@ -2,7 +2,7 @@ import logging
 
 
 import utils
-import constants
+import util_which
 
 
 log = logging.getLogger(__name__)
@@ -106,10 +106,6 @@ class init_system(object):
         return self._init_type_implementation.on_boot_disable(**kwargs)
 
 class init_system_systemd():
-    def __init__(self):
-        if constants._path_systemctl is None:
-            raise Error("Could not find executable 'systemctl'")
-
 
     def _get_systemctl_name(self, **kwargs):
         service = kwargs.get("service")
@@ -125,7 +121,7 @@ class init_system_systemd():
 
         systemctl_name = self._get_systemctl_name(**kwargs)
         arguments = [
-                constants._path_systemctl,
+                util_which.which_systemctl.path,
                 'show',
                 '--property',
                 'ActiveState',
@@ -157,7 +153,7 @@ class init_system_systemd():
     def start(self, **kwargs):
         systemctl_name = self._get_systemctl_name(**kwargs)
         arguments = [
-                constants._path_systemctl,
+                util_which.which_systemctl.path,
                 'start',
                 systemctl_name
             ]
@@ -174,7 +170,7 @@ class init_system_systemd():
     def stop(self, **kwargs):
         systemctl_name = self._get_systemctl_name(**kwargs)
         arguments = [
-                constants._path_systemctl,
+                util_which.which_systemctl.path,
                 'stop',
                 systemctl_name
             ]
@@ -191,7 +187,7 @@ class init_system_systemd():
     def restart(self, **kwargs):
         systemctl_name = self._get_systemctl_name(**kwargs)
         arguments = [
-                constants._path_systemctl,
+                util_which.which_systemctl.path,
                 'restart',
                 systemctl_name
             ]
@@ -210,7 +206,7 @@ class init_system_systemd():
 
         systemctl_name = self._get_systemctl_name(**kwargs)
         arguments = [
-                constants._path_systemctl,
+                util_which.which_systemctl.path,
                 'enable',
                 systemctl_name
             ]
@@ -219,7 +215,7 @@ class init_system_systemd():
     def on_boot_disable(self, **kwargs):
         systemctl_name = self._get_systemctl_name(**kwargs)
         arguments = [
-                constants._path_systemctl,
+                util_which.which_systemctl.path,
                 'disable',
                 systemctl_name
             ]

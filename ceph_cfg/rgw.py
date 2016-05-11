@@ -7,6 +7,7 @@ import shutil
 # Local imports
 import utils
 import constants
+import util_which
 import keyring
 import model
 import mdl_updater_remote
@@ -30,7 +31,7 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
         super(rgw_ctrl, self).__init__(**kwargs)
         self.service_name = "ceph-radosgw"
         # Set path to rgw binary
-        self.path_service_bin = constants._path_ceph_rgw
+        self.path_service_bin = util_which.which_ceph_rgw.path
         self.rgw_name = kwargs.get("name")
 
 

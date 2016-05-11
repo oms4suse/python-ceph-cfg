@@ -8,6 +8,7 @@ import utils
 import mdl_updater
 import service
 import keyring
+import util_which
 
 log = logging.getLogger(__name__)
 
@@ -23,7 +24,7 @@ class Error(Exception):
 
 def service_shutdown_ceph():
     arguments = [
-            constants._path_systemctl,
+            util_which.which_systemctl.path,
             "stop",
             "ceph*",
             ]

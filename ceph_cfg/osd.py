@@ -10,6 +10,7 @@ import constants
 import model
 import mdl_updater
 import mdl_query
+import util_which
 
 
 log = logging.getLogger(__name__)
@@ -261,11 +262,8 @@ class osd_ctrl(object):
                 if len(part_table.keys()) > 0:
                     return True
 
-
-        if not constants._path_ceph_disk:
-            raise Error("Error 'ceph-disk' command not find")
         arguments = [
-            constants._path_ceph_disk,
+            util_which.which_ceph_disk.path,
             '-v',
             'prepare',
             '--fs-type',
