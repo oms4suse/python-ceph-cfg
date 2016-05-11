@@ -11,6 +11,7 @@ import keyring
 import model
 import mdl_updater
 import rados_client
+import util_which
 
 
 log = logging.getLogger(__name__)
@@ -30,7 +31,7 @@ class mds_ctrl(rados_client.ctrl_rados_client):
         super(mds_ctrl, self).__init__(**kwargs)
         self.service_name = "ceph-mds"
         # Set path to mds binary
-        self.path_service_bin = constants._path_ceph_mds
+        self.path_service_bin = util_which.which_ceph_mds.path
         self.mds_name = kwargs.get("name")
         self.port = kwargs.get("port")
         self.addr = kwargs.get("addr")
