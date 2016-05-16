@@ -190,6 +190,8 @@ class osd_ctrl(object):
 
 
     def prepare(self, **kwargs):
+        dmcrypt = kwargs.get("dmcrypt")
+        dmcrypt_key_dir = kwargs.get("dmcrypt_key_dir")
         osd_dev_raw = kwargs.get("osd_dev")
         journal_dev = kwargs.get("journal_dev")
         cluster_name = kwargs.get("cluster_name")
@@ -269,6 +271,11 @@ class osd_ctrl(object):
             '--fs-type',
             fs_type
             ]
+        if dmcrypt is not None:
+            arguments.append("--dmcrypt")
+        if dmcrypt_key_dir is not None:
+            arguments.append("--dmcrypt-key-dir")
+            arguments.append(dmcrypt_key_dir)
         if osd_dev is not None:
             arguments.append("--data-dev")
         if journal_dev is not None:
