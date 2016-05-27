@@ -96,9 +96,6 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
         # creation for the rgw service.
         if not self.rgw_name.startswith("rgw."):
             raise Error("rgw name must start with 'rgw.'")
-        missing_pools = self.rgw_pools_missing()
-        if len(missing_pools) > 0:
-            raise Error("Pools missing: %s" % (", ".join(missing_pools)))
         self.service_available()
         self._set_rgw_path_lib()
         path_bootstrap_keyring = keyring._get_path_keyring_rgw(self.model.cluster_name)
