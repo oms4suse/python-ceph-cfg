@@ -205,7 +205,11 @@ class keyring_implementation_admin(keyring_implementation_base):
         return _get_path_keyring_admin(self.model.cluster_name)
 
     def get_arguments_create(self, path, secret=None):
-        return self.invoke_ceph_authtool(self.keyring_name, path, self.caps, secret=secret)
+        extra_args=[]
+        if self.model.ceph_version.major == 0:
+            if self.model.ceph_version.minor < 95:
+                extra_args+=["--set-uid=0"]
+        return self.invoke_ceph_authtool(self.keyring_name, path, self.caps, secret=secret, extra_args=extra_args)
 
 class keyring_implementation_mon(keyring_implementation_base):
     def __init__(self, mdl):
@@ -222,8 +226,7 @@ class keyring_implementation_mon(keyring_implementation_base):
                 self.model.hostname)
 
     def get_arguments_create(self, path, secret=None):
-        extra_args=["--set-uid=0"]
-        return self.invoke_ceph_authtool(self.keyring_name, path, self.caps, secret=secret, extra_args=extra_args)
+        return self.invoke_ceph_authtool(self.keyring_name, path, self.caps, secret=secret)
 
 
 class keyring_implementation_osd(keyring_implementation_base):
