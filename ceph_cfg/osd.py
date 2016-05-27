@@ -96,7 +96,9 @@ class osd_ctrl(object):
         return activate_list
 
 
-    def activate_partiion(self, partiion):
+    def activate_partition(self, partition, **kwargs):
+        dmcrypt = kwargs.get("dmcrypt")
+        dmcrypt_key_dir = kwargs.get("dmcrypt_key_dir")
         arguments = [
                 'ceph-disk',
                 '-v',
@@ -104,8 +106,14 @@ class osd_ctrl(object):
                 '--mark-init',
                 self.model.init,
                 '--mount',
-                partiion,
             ]
+        if dmcrypt is not None:
+            arguments.append("--dmcrypt")
+        if dmcrypt_key_dir is not None:
+            arguments.append("--dmcrypt-key-dir")
+            arguments.append(dmcrypt_key_dir)
+        arguments.append(partition)
+
         output = utils.execute_local_command(arguments)
         if output["retcode"] != 0:
                 raise Error("Failed executing '%s' Error rc=%s, stdout=%s stderr=%s" % (
@@ -132,7 +140,7 @@ class osd_ctrl(object):
                 for dev_norm in self._activate_targets_item(dev_raw):
                     activate_list.add(dev_norm)
         for part in activate_list:
-            self.activate_partiion(part)
+            self.activate_partition(part, **kwargs)
         return True
 
 
@@ -190,6 +198,8 @@ class osd_ctrl(object):
 
 
     def prepare(self, **kwargs):
+        dmcrypt = kwargs.get("dmcrypt")
+        dmcrypt_key_dir = kwargs.get("dmcrypt_key_dir")
         osd_dev_raw = kwargs.get("osd_dev")
         journal_dev = kwargs.get("journal_dev")
         cluster_name = kwargs.get("cluster_name")
@@ -269,6 +279,11 @@ class osd_ctrl(object):
             '--fs-type',
             fs_type
             ]
+        if dmcrypt is not None:
+            arguments.append("--dmcrypt")
+        if dmcrypt_key_dir is not None:
+            arguments.append("--dmcrypt-key-dir")
+            arguments.append(dmcrypt_key_dir)
         if osd_dev is not None:
             arguments.append("--data-dev")
         if journal_dev is not None:
