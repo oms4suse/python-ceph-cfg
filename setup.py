@@ -73,8 +73,5 @@ setup(name='ceph_cfg',
         'pytest >=2.1.3',
         'mock >=1.0b1',
         ],
-    setup_requires=[
-        'pytest',
-    ],
     cmdclass = {'test': Tox},
     )
