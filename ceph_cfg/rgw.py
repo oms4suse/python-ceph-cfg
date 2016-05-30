@@ -61,7 +61,7 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
             raise Error("Cant connect to cluster.")
         mur.pool_list()
         if self.model.pool_list == None:
-            LOG.error("Failed to list available pools")
+            log.error("Failed to list available pools")
             return False
         foundnames = set()
         for pool in self.model.pool_list:
