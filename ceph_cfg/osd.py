@@ -9,7 +9,6 @@ import keyring
 import constants
 import model
 import mdl_updater
-import mdl_query
 import util_which
 
 
@@ -170,7 +169,6 @@ class osd_ctrl(object):
 
 
     def _prepare_check_partition_type_data(self, partition):
-        import json
         part_type = self._get_part_type(partition)
         if part_type == constants.OSD_UUID:
             return True
