@@ -3,6 +3,7 @@ import stat
 import os.path
 import os
 import util_which
+import subprocess
 
 # local modules
 import utils
