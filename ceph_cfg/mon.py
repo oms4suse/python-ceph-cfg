@@ -247,10 +247,6 @@ class mon_implementation_base(object):
                 self.model.hostname
             )
         keyring_path_mon = keyring._get_path_keyring_mon_bootstrap(self.model.cluster_name, self.model.hostname)
-        path_adm_sock = "/var/run/ceph/%s-mon.%s.asok" % (
-                self.model.cluster_name,
-                self.model.hostname
-            )
         path_mon_dir = "/var/lib/ceph/mon/%s-%s" % (
                 self.model.cluster_name,
                 self.model.hostname
