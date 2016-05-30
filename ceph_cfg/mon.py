@@ -241,7 +241,6 @@ class mon_implementation_base(object):
         q = mdl_query.mdl_query(self.model)
         if not q.mon_is():
             raise Error("Not a mon node")
-        p = presenter.mdl_presentor(self.model)
 
         path_done_file = "/var/lib/ceph/mon/%s-%s/done" % (
                 self.model.cluster_name,
