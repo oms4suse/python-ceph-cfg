@@ -216,7 +216,7 @@ class mon_implementation_base(object):
             if self._create_check_responding():
                 return True
         log.error("Timed out starting mon service")
-        raise Error("Failed to get mon service status after '%s' seconds." % (retry_max * retry_sleep))
+        raise Error("Failed to get mon service status after '%s' seconds." % (timeout))
 
 
     def create(self, **kwargs):
