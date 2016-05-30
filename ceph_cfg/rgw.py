@@ -166,7 +166,7 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
             log.info("Remove from auth list keyring:%s" % (rgw_path_keyring))
             try:
                 self._remove_rgw_keyring()
-            except Error,e:
+            except Error:
                 log.error("Failed to remote from auth list")
         removetree = "%s/" % (self.rgw_path_lib)
         log.info("Remove directory content:%s" % (removetree))
