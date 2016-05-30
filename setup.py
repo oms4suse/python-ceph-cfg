@@ -56,7 +56,7 @@ setup(name='ceph_cfg',
         'mock >=1.0b1',
         ],
     setup_requires=[
-        'nose',
+        'pytest',
     ],
     test_suite = 'nose.collector',
     )
