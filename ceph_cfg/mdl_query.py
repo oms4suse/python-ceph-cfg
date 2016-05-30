@@ -2,7 +2,6 @@
 import logging
 
 # Local imports
-import utils
 import service
 
 log = logging.getLogger(__name__)
