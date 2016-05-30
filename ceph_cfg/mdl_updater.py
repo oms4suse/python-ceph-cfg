@@ -419,7 +419,6 @@ class model_updater():
         if version_raw_split[1] != "version":
             raise Error("ceph returned an invalid version second value is not 'version':'%s' " % (version_raw))
         version_public_raw = version_raw_split[2]
-        version_git_raw = version_raw_split[2]
         version_public = version_public_raw.split(".")
         if len(version_public) < 3:
             raise Error("ceph returned an invalid version second value is not 'version':'%s' " % (version_raw))
