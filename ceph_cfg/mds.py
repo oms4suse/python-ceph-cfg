@@ -113,8 +113,6 @@ class mds_ctrl(rados_client.ctrl_rados_client):
     def _remove_mds_keyring(self):
         if not os.path.isdir(self.mds_path_lib):
             return
-        mds_path_keyring = os.path.join(self.mds_path_lib, 'keyring')
-
         path_bootstrap_keyring = keyring._get_path_keyring_mds(self.model.cluster_name)
         arguments = [
             'ceph',
