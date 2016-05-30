@@ -366,8 +366,8 @@ class model_updater():
         if len(mon_initial_members_name_cleaned) != len(mon_initial_members_addr_cleaned):
             raise Error("config has different numbers of mon 'names' and ip addresses")
         output = []
-        items = len(mon_initial_members_name_cleaned)
-        for idx in range(0,len(mon_initial_members_name_cleaned)):
+        mon_initial_members_name_len = len(mon_initial_members_name_cleaned)
+        for idx in range(0,mon_initial_members_name_len):
             output.append((
                     mon_initial_members_name_cleaned[idx],
                     mon_initial_members_addr_cleaned[idx]
