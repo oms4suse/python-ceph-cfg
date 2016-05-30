@@ -114,7 +114,7 @@ class init_system_systemd():
         identifier = kwargs.get("identifier")
         if identifier != None:
             return str(service + "@" + identifier)
-        return service_name
+        return service
 
 
     def is_running(self, **kwargs):

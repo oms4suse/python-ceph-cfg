@@ -44,3 +44,29 @@ These objects are used to update the Model.
 3. Presenters
 
 These objects are used to present the data in the model to the API users.
+
+Unit tests
+----------
+
+This code base is tested with the tox framework. All tests are in the directory:
+
+    ceph_cfg/tests/
+
+To run all tests please run:
+
+    tox
+
+Each test can be indevidually run an example is shown here:
+
+    py.test ceph_cfg/tests/test_utils_is_valid_base64.py 
+
+Submitting Patches
+------------------
+Please add test cases to cover any code you add. You can test your changes
+by running ``tox`` (You will also need ``mock`` and ``pytest`` ) from inside
+the git clone
+
+When creating a commit message please use ``git commit -s`` or otherwise add
+``Signed-off-by: Your Name <email@address.dom>`` to your commit message.
+
+Patches can then be submitted by a pull request on GitHub.

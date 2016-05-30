@@ -1,7 +1,6 @@
 # Python imports
 import os
 import logging
-import json
 import shutil
 
 # Local imports
@@ -9,7 +8,6 @@ import utils
 import constants
 import util_which
 import keyring
-import model
 import mdl_updater_remote
 import rados_client
 
@@ -63,7 +61,7 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
             raise Error("Cant connect to cluster.")
         mur.pool_list()
         if self.model.pool_list == None:
-            LOG.error("Failed to list available pools")
+            log.error("Failed to list available pools")
             return False
         foundnames = set()
         for pool in self.model.pool_list:
@@ -80,7 +78,7 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
         for name in self.rgw_pools_missing():
             log.info("Adding missing pool:%s" % (name))
             try:
-                tmp_rc = mur.pool_add(name, pg_num=16)
+                mur.pool_add(name, pg_num=16)
             except mdl_updater_remote.Error, e:
                 log.error(e)
                 log.error("Failed to add pool '%s'" % (name))
@@ -138,8 +136,6 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
         self._set_rgw_path_lib()
         if not os.path.isdir(self.rgw_path_lib):
             return
-        rgw_path_keyring = os.path.join(self.rgw_path_lib, 'keyring')
-
         path_bootstrap_keyring = keyring._get_path_keyring_rgw(self.model.cluster_name)
         arguments = [
             'ceph',
@@ -170,7 +166,7 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
             log.info("Remove from auth list keyring:%s" % (rgw_path_keyring))
             try:
                 self._remove_rgw_keyring()
-            except Error,e:
+            except Error:
                 log.error("Failed to remote from auth list")
         removetree = "%s/" % (self.rgw_path_lib)
         log.info("Remove directory content:%s" % (removetree))

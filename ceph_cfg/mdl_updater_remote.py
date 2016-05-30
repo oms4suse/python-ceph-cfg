@@ -178,11 +178,18 @@ class model_updater_remote():
                 "-i",
                 keyringobj.keyring_path_get()
                 ]
-        cmd_out = utils.execute_local_command(arguments)
+        output = utils.execute_local_command(arguments)
+        if output["retcode"] != 0:
+            raise Error("Failed executing '%s' Error rc=%s, stdout=%s stderr=%s" % (
+                        " ".join(arguments),
+                        output["retcode"],
+                        output["stdout"],
+                        output["stderr"])
+                        )
         return True
 
 
-    def auth_del(self, **kwargs):
+    def auth_del(self, keyring_type):
         """
         Remove Authorised keyring
         """
@@ -197,7 +204,14 @@ class model_updater_remote():
                 "del",
                 keyringobj.keyring_path_get()
                 ]
-        cmd_out = utils.execute_local_command(arguments)
+        output = utils.execute_local_command(arguments)
+        if output["retcode"] != 0:
+            raise Error("Failed executing '%s' Error rc=%s, stdout=%s stderr=%s" % (
+                        " ".join(arguments),
+                        output["retcode"],
+                        output["stdout"],
+                        output["stderr"])
+                        )
         return True
 
 

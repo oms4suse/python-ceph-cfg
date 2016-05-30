@@ -1,7 +1,6 @@
 # Python imports
 import logging
 import os
-import platform
 import pwd
 import tempfile
 import shutil
@@ -14,7 +13,6 @@ import mdl_updater
 import model
 import presenter
 import utils
-import constants
 import service
 import util_which
 
@@ -131,8 +129,6 @@ class mon_implementation_base(object):
         cluster_name
             Set the cluster name. Defaults to "ceph".
         """
-
-        hostname = platform.node().split('.')[0]
         u = mdl_updater.model_updater(self.model)
         u.hostname_refresh()
         try:
@@ -166,8 +162,6 @@ class mon_implementation_base(object):
         cluster_name
             Set the cluster name. Defaults to "ceph".
         """
-
-        hostname = platform.node().split('.')[0]
         u = mdl_updater.model_updater(self.model)
         u.hostname_refresh()
         try:
@@ -207,7 +201,6 @@ class mon_implementation_base(object):
         timeout = 60
         time_start = time.clock()
         time_end = time_start + timeout
-        running = True
         if self._create_check_responding():
             return True
         while time.clock() < time_end:
@@ -217,7 +210,7 @@ class mon_implementation_base(object):
             if self._create_check_responding():
                 return True
         log.error("Timed out starting mon service")
-        raise Error("Failed to get mon service status after '%s' seconds." % (retry_max * retry_sleep))
+        raise Error("Failed to get mon service status after '%s' seconds." % (timeout))
 
 
     def create(self, **kwargs):
@@ -248,17 +241,12 @@ class mon_implementation_base(object):
         q = mdl_query.mdl_query(self.model)
         if not q.mon_is():
             raise Error("Not a mon node")
-        p = presenter.mdl_presentor(self.model)
 
         path_done_file = "/var/lib/ceph/mon/%s-%s/done" % (
                 self.model.cluster_name,
                 self.model.hostname
             )
         keyring_path_mon = keyring._get_path_keyring_mon_bootstrap(self.model.cluster_name, self.model.hostname)
-        path_adm_sock = "/var/run/ceph/%s-mon.%s.asok" % (
-                self.model.cluster_name,
-                self.model.hostname
-            )
         path_mon_dir = "/var/lib/ceph/mon/%s-%s" % (
                 self.model.cluster_name,
                 self.model.hostname
@@ -267,9 +255,6 @@ class mon_implementation_base(object):
         path_admin_keyring = keyring._get_path_keyring_admin(self.model.cluster_name)
 
         path_monmap = "/var/lib/ceph/tmp/%s.monmap" % (
-                self.model.cluster_name
-            )
-        path_tmp_keyring = "/var/lib/ceph/tmp/%s.keyring" % (
                 self.model.cluster_name
             )
         if os.path.isfile(path_done_file):

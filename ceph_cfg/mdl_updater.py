@@ -351,7 +351,7 @@ class model_updater():
         hostname = platform.node().split('.')[0]
 
         try:
-            index = mon_initial_members_name_cleaned.index(hostname)
+            mon_initial_members_name_cleaned.index(hostname)
         except:
             log.debug("Mon not needed on %s" % (hostname))
             return True
@@ -366,8 +366,8 @@ class model_updater():
         if len(mon_initial_members_name_cleaned) != len(mon_initial_members_addr_cleaned):
             raise Error("config has different numbers of mon 'names' and ip addresses")
         output = []
-        items = len(mon_initial_members_name_cleaned)
-        for idx in range(0,len(mon_initial_members_name_cleaned)):
+        mon_initial_members_name_len = len(mon_initial_members_name_cleaned)
+        for idx in range(0,mon_initial_members_name_len):
             output.append((
                     mon_initial_members_name_cleaned[idx],
                     mon_initial_members_addr_cleaned[idx]
@@ -419,7 +419,6 @@ class model_updater():
         if version_raw_split[1] != "version":
             raise Error("ceph returned an invalid version second value is not 'version':'%s' " % (version_raw))
         version_public_raw = version_raw_split[2]
-        version_git_raw = version_raw_split[2]
         version_public = version_public_raw.split(".")
         if len(version_public) < 3:
             raise Error("ceph returned an invalid version second value is not 'version':'%s' " % (version_raw))

@@ -1,14 +1,9 @@
 import logging
-import shlex
-import tempfile
 import stat
-import ConfigParser
 import os.path
 import os
-import platform
-import json
-import shutil
 import util_which
+import subprocess
 
 # local modules
 import utils
@@ -16,7 +11,6 @@ import model
 import mdl_updater
 import presenter
 import mdl_query
-import utils
 import osd
 import mon
 import rgw
@@ -116,7 +110,7 @@ def partition_is(dev):
     salt '*' sesceph.partition_is /dev/sdc1
 
     """
-    mdl = model.model(**kwargs)
+    mdl = model.model()
     osdc = osd.osd_ctrl(mdl)
     return osdc.is_partition(dev)
 
