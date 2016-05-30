@@ -1,10 +1,7 @@
-import os
 import logging
 
 
 import utils
-import constants
-import keyring
 import model
 import mdl_updater
 import service
