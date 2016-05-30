@@ -1,7 +1,6 @@
 # Python imports
 import logging
 import os
-import platform
 import pwd
 import tempfile
 import shutil
