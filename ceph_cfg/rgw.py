@@ -78,7 +78,7 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
         for name in self.rgw_pools_missing():
             log.info("Adding missing pool:%s" % (name))
             try:
-                tmp_rc = mur.pool_add(name, pg_num=16)
+                mur.pool_add(name, pg_num=16)
             except mdl_updater_remote.Error, e:
                 log.error(e)
                 log.error("Failed to add pool '%s'" % (name))
