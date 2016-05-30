@@ -1,3 +1,7 @@
+0.1.4
+-----
+* Remove nose test from setup.py
+
 0.1.3
 -----
 * Add flake8 and py.test infrastructure
