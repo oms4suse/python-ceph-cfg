@@ -351,7 +351,7 @@ class model_updater():
         hostname = platform.node().split('.')[0]
 
         try:
-            index = mon_initial_members_name_cleaned.index(hostname)
+            mon_initial_members_name_cleaned.index(hostname)
         except:
             log.debug("Mon not needed on %s" % (hostname))
             return True
