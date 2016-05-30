@@ -34,8 +34,7 @@ def _quote_arguments_with_space(argument):
 def execute_local_command(command_attrib_list):
     log.info("executing " + " ".join(map(_quote_arguments_with_space, command_attrib_list)))
     if '__salt__' in locals():
-        return __salt__['cmd.run_all'](command_attrib_list,
-                                      python_shell=False)
+        return __salt__['cmd.run_all'](command_attrib_list, python_shell=False) # noqa
 
     # if we cant exute subprocess with salt, use python
     import subprocess
