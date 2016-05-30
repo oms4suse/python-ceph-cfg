@@ -130,8 +130,6 @@ class mon_implementation_base(object):
         cluster_name
             Set the cluster name. Defaults to "ceph".
         """
-
-        hostname = platform.node().split('.')[0]
         u = mdl_updater.model_updater(self.model)
         u.hostname_refresh()
         try:
@@ -216,7 +214,7 @@ class mon_implementation_base(object):
             if self._create_check_responding():
                 return True
         log.error("Timed out starting mon service")
-        raise Error("Failed to get mon service status after '%s' seconds." % (timeout))
+        raise Error("Failed to get mon service status after '%s' seconds." % (retry_max * retry_sleep))
 
 
     def create(self, **kwargs):
