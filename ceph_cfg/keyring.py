@@ -7,7 +7,6 @@ import os.path
 
 # Local imports
 import utils
-import mdl_query
 import constants
 import util_which
 
