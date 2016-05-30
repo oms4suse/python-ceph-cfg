@@ -3,7 +3,7 @@ from sys import version_info
 
 if version_info < (2, 6):
     import sys
-    print "Please use a newer version of python"
+    print("Please use a newer version of python")
     sys.exit(1)
 
 
@@ -52,9 +52,9 @@ setup(name='ceph_cfg',
     scripts=[],
     tests_require=[
         'coverage >= 3.0',
-        'nose >= 0.10.0',
-        'mock',
-    ],
+        'pytest >=2.1.3',
+        'mock >=1.0b1',
+        ],
     setup_requires=[
         'nose',
     ],
