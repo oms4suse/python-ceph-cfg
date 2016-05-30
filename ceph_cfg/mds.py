@@ -1,15 +1,12 @@
 # Python imports
 import os
 import logging
-import json
 import shutil
 
 # Local imports
 import utils
 import constants
 import keyring
-import model
-import mdl_updater
 import rados_client
 import util_which
 
