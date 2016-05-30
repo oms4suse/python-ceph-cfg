@@ -189,7 +189,7 @@ class model_updater_remote():
         return True
 
 
-    def auth_del(self, **kwargs):
+    def auth_del(self, keyring_type):
         """
         Remove Authorised keyring
         """
