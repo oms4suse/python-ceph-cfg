@@ -257,9 +257,6 @@ class mon_implementation_base(object):
         path_monmap = "/var/lib/ceph/tmp/%s.monmap" % (
                 self.model.cluster_name
             )
-        path_tmp_keyring = "/var/lib/ceph/tmp/%s.keyring" % (
-                self.model.cluster_name
-            )
         if os.path.isfile(path_done_file):
             log.debug("Mon done file exists:%s" % (path_done_file))
             if q.mon_active():
