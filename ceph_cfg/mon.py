@@ -14,7 +14,6 @@ import mdl_updater
 import model
 import presenter
 import utils
-import constants
 import service
 import util_which
 
