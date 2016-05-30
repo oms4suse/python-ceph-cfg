@@ -136,8 +136,6 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
         self._set_rgw_path_lib()
         if not os.path.isdir(self.rgw_path_lib):
             return
-        rgw_path_keyring = os.path.join(self.rgw_path_lib, 'keyring')
-
         path_bootstrap_keyring = keyring._get_path_keyring_rgw(self.model.cluster_name)
         arguments = [
             'ceph',
