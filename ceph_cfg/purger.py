@@ -6,7 +6,6 @@ import os.path
 import constants
 import utils
 import mdl_updater
-import service
 import keyring
 import util_which
 
