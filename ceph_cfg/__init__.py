@@ -1,13 +1,7 @@
 import logging
-import shlex
-import tempfile
 import stat
-import ConfigParser
 import os.path
 import os
-import platform
-import json
-import shutil
 import util_which
 
 # local modules
@@ -16,7 +10,6 @@ import model
 import mdl_updater
 import presenter
 import mdl_query
-import utils
 import osd
 import mon
 import rgw
