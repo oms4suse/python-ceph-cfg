@@ -8,7 +8,7 @@ __has_salt = True
 
 try:
     import salt.client
-    import salt.config
+    import salt.config # noqa
 except :
     __has_salt = False
 
