@@ -163,8 +163,6 @@ class mon_implementation_base(object):
         cluster_name
             Set the cluster name. Defaults to "ceph".
         """
-
-        hostname = platform.node().split('.')[0]
         u = mdl_updater.model_updater(self.model)
         u.hostname_refresh()
         try:
