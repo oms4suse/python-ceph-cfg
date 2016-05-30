@@ -176,7 +176,6 @@ class keyring_implementation_base(object):
                 cmd_out["stdout"],
                 cmd_out["stderr"])
                 )
-        output = _keying_read(keyring_path)
         return True
 
 
