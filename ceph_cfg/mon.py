@@ -201,7 +201,6 @@ class mon_implementation_base(object):
         timeout = 60
         time_start = time.clock()
         time_end = time_start + timeout
-        running = True
         if self._create_check_responding():
             return True
         while time.clock() < time_end:
