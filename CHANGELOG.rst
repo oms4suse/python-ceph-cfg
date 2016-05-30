@@ -1,3 +1,12 @@
+0.1.3
+-----
+* Add flake8 and py.test infrastructure
+* rgw: do not check for missing pools.
+  + RGW pools have different names on Jewel.
+  + these pools are autocreated in Jewel.
+  + Creating pools which are not used for the 2 reasons above only increases pg's/pgp's per osd.
+  + Multisite/Multizone does probably not need these standard rgw pools.
+
 0.1.2
 -----
 * memoize the paths for executables only when they are found
