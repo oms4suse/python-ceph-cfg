@@ -231,6 +231,7 @@ class model_updater():
         for disk_name in self.model.lsblk.keys():
             arguments = [
                 'parted',
+                '-s',
                 disk_name,
                 'print'
                 ]
