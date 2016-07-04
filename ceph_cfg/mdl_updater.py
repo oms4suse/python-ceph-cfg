@@ -228,7 +228,7 @@ class model_updater():
         List all partition details using parted
         '''
         arguments = [
-            'parted',
+            util_which.which_parted.path,
             '-s',
             '-m',
             '-l',
