@@ -1,3 +1,8 @@
+import logging
+
+log = logging.getLogger(__name__)
+
+
 class mdl_presentor():
     """
     Since presentation should be clean to the end user
@@ -5,6 +10,197 @@ class mdl_presentor():
     """
     def __init__(self, model):
         self.model = model
+
+
+    def _disks_all(self):
+        disk_lsblk = set(self.model.lsblk.keys())
+        disk_parted = set(self.model.parted.keys())
+        return disk_lsblk.union(disk_parted)
+
+
+    def _disk_partitions_lsblk(self, disk):
+        partitions = set()
+        disk_details = self.model.lsblk.get(disk)
+        if disk_details is None:
+            return partitions
+        all_parts = disk_details.get('PARTITION')
+        if all_parts is None:
+            return partitions
+        return set(all_parts.keys())
+
+
+    def _disk_partitions_parted(self, disk):
+        partitions = set()
+        disk_details = self.model.lsblk.get(disk)
+        if disk_details is None:
+            return partitions
+        all_parts = disk_details.get('PARTITION')
+        if all_parts is None:
+            return partitions
+        return set(all_parts.keys())
+
+
+    def _disk_partitions(self, disk):
+        partitions_lsblk = self._disk_partitions_lsblk(disk)
+        partitions_parted = self._disk_partitions_parted(disk)
+        return partitions_lsblk.union(partitions_parted)
+
+
+    def _partition_details_parted(self, disk, partition):
+        output = {}
+        details_disk = self.model.parted.get(disk)
+        if details_disk == None:
+            return output
+        allpart = details_disk.get("partition")
+        if allpart == None:
+            log.debug("No partition info found:_partition_details_lsblk")
+            return output
+        details_partition = allpart.get(partition)
+        if details_partition == None:
+            log.debug("_partition_details_parted:No partition info found")
+            log.debug(details_disk)
+            return output
+        data_mapper = {
+                'Number' : 'NUMBER',
+                'Size' : 'SIZE_HUMAN'
+            }
+        for key in data_mapper.keys():
+            data = details_partition.get(key)
+            if data == None:
+                continue
+            mapped_key = data_mapper.get(key)
+            if mapped_key == None:
+                continue
+            output[mapped_key] = data
+        return output
+
+
+    def _partition_details_lsblk(self, disk, partition):
+        output = {}
+        details_disk = self.model.lsblk.get(disk)
+        if details_disk == None:
+            log.debug("No disk info found:_partition_details_lsblk")
+            return output
+        allpart = details_disk.get("PARTITION")
+        if allpart == None:
+            log.debug("No partition info found:_partition_details_lsblk")
+            return output
+        details_partition = allpart.get(partition)
+        if details_partition == None:
+            log.debug("No partition info found:_partition_details_lsblk")
+            return output
+        data_mapper = {
+                'SIZE' : 'SIZE',
+                'NAME' : 'NAME',
+                'VENDOR' : 'VENDOR',
+                'UUID' : 'UUID',
+                'PARTLABEL' : 'PARTLABEL',
+                'PKNAME' : 'PKNAME',
+                'FSTYPE' : 'FSTYPE',
+                'PARTTYPE' : 'PARTTYPE',
+                'MOUNTPOINT' : 'MOUNTPOINT',
+                'PARTUUID' : 'PARTUUID',
+                'ROTA' : 'ROTA',
+                'SCHED' : 'SCHED',
+                'RQ-SIZE' : 'RQ-SIZE',
+            }
+        for key in data_mapper.keys():
+            data = details_partition.get(key)
+            if data == None:
+                continue
+            mapped_key = data_mapper.get(key)
+            if mapped_key == None:
+                continue
+            output[mapped_key] = data
+        return output
+
+
+    def _partition_details(self, disk, partition):
+        output = {}
+        symlinks = self.model.symlinks.get(partition)
+        if symlinks is not None:
+            output["LINK"] = symlinks
+        lsblk = self._partition_details_lsblk(disk, partition)
+        output.update(lsblk)
+        parted = self._partition_details_parted(disk, partition)
+        output.update(parted)
+        return output
+
+
+
+    def _disk_details_parted(self, disk):
+        output = {}
+        details_disk = self.model.parted.get(disk)
+        if details_disk == None:
+            return output
+        data_mapper = {
+                'driver' : 'DRIVER',
+                'sector_size_logical' : 'SECTOR_SIZE_LOGICAL',
+                'sector_size_physical' : 'SECTOR_SIZE_PHYSICAL',
+                'table' : 'TABLE',
+                'vendor' : 'VENDOR_NAME'
+            }
+        for key in data_mapper.keys():
+            data = details_disk.get(key)
+            if data == None:
+                continue
+            mapped_key = data_mapper.get(key)
+            if mapped_key == None:
+                continue
+            output[mapped_key] = data
+        return output
+
+
+    def _disk_details_lsblk(self, disk):
+        output = {}
+        details_disk = self.model.lsblk.get(disk)
+        if details_disk == None:
+            return output
+        data_mapper = {
+                'SIZE' : 'SIZE',
+                'NAME' : 'NAME',
+                'VENDOR' : 'VENDOR',
+                'UUID' : 'UUID',
+                'PARTLABEL' : 'PARTLABEL',
+                'PKNAME' : 'PKNAME',
+                'FSTYPE' : 'FSTYPE',
+                'PARTTYPE' : 'PARTTYPE',
+                'MOUNTPOINT' : 'MOUNTPOINT',
+                'PARTUUID' : 'PARTUUID',
+                'ROTA' : 'ROTA',
+                'SCHED' : 'SCHED',
+                'RQ-SIZE' :'RQ-SIZE'
+            }
+        for key in data_mapper.keys():
+            data = details_disk.get(key)
+            if data == None:
+                continue
+            mapped_key = data_mapper.get(key)
+            if mapped_key == None:
+                continue
+            output[mapped_key] = data
+        return output
+
+
+    def _disk_details(self, disk):
+        output = {}
+        symlinks = self.model.symlinks.get(disk)
+        if symlinks is not None:
+            output["LINK"] = symlinks
+        parted = self._disk_details_parted(disk)
+        output.update(parted)
+        lsblk = self._disk_details_lsblk(disk)
+        output.update(lsblk)
+        partitions = self._disk_partitions(disk)
+        log.info("All partitons = %s" % (partitions))
+        output["PARTITION"] = {}
+        for part in partitions:
+            partition_details = self._partition_details(disk, part)
+            output["PARTITION"][part] = partition_details
+        return output
+
+
+
 
     def lsblk_partition_by_disk_part(self, part):
         output = {}
@@ -90,8 +286,9 @@ class mdl_presentor():
             salt '*' sesceph.partitions_all
         '''
         output = {}
-        for disk in self.model.lsblk.keys():
-            output[disk] = self._partitions_all_lsblk_by_disk(disk)
+        for disk in self._disks_all():
+
+            output[disk] = self._disk_details(disk)
 
         return output
 
