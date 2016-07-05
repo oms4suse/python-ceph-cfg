@@ -242,40 +242,6 @@ class mdl_presentor():
 
         return output
 
-    def _partitions_all_lsblk_by_disk(self, disk):
-        output = {}
-        disk_details = self.model.lsblk.get(disk)
-        if disk_details is None:
-            return None
-        symlinks = self.model.symlinks.get(disk)
-        if symlinks is not None:
-            output["LINK"] = symlinks
-        wanted_keys = set([
-                'NAME',
-                'PARTTABLE',
-                'ROTA',
-                'RQ-SIZE',
-                'SCHED',
-                'SIZE',
-                'VENDOR'
-            ])
-        for key in disk_details:
-            if key == 'PARTITION':
-                part_list = []
-                for part in disk_details['PARTITION'].keys():
-                    part_info = self.lsblk_partition_by_disk_part(part)
-                    if part_info is None:
-                        continue
-                    part_list.append(part_info)
-                output["PARTITION"] = part_list
-            if not key in wanted_keys:
-                continue
-            output[key] = disk_details.get(key)
-
-        return output
-
-
-
 
     def partitions_all(self):
         '''
