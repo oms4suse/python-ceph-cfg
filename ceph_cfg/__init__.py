@@ -44,7 +44,6 @@ def partition_list():
     u = mdl_updater.model_updater(m)
     u.symlinks_refresh()
     u.partitions_all_refresh()
-    u.partition_table_refresh()
     p = presenter.mdl_presentor(m)
     return p.partitions_all()
 
