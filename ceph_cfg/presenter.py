@@ -200,49 +200,6 @@ class mdl_presentor():
         return output
 
 
-
-
-    def lsblk_partition_by_disk_part(self, part):
-        output = {}
-        disk = self.model.part_pairent.get(part)
-        if disk is None:
-            return None
-        disk_details = self.model.lsblk.get(disk)
-        if disk_details is None:
-            return None
-        symlinks = self.model.symlinks.get(part)
-        if symlinks is not None:
-            output["LINK"] = symlinks
-        wanted_keys = set([
-                'SIZE',
-                'NAME',
-                'VENDOR',
-                'UUID',
-                'PARTLABEL',
-                'PKNAME',
-                'FSTYPE',
-                'PARTTYPE',
-                'MOUNTPOINT',
-                'PARTUUID',
-                'ROTA',
-                'SCHED',
-                'RQ-SIZE'
-            ])
-
-        all_parts = disk_details.get('PARTITION')
-        if all_parts is None:
-            return None
-        part_details = all_parts.get(part)
-        if part_details is None:
-            return None
-        for key in part_details:
-            if not key in wanted_keys:
-                continue
-            output[key] = part_details.get(key)
-
-        return output
-
-
     def partitions_all(self):
         '''
         List all partition details
