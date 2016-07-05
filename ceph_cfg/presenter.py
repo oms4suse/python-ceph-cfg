@@ -46,7 +46,7 @@ class mdl_presentor():
 
         return output
 
-    def lsblk_disk_by_disk(self, disk):
+    def _partitions_all_lsblk_by_disk(self, disk):
         output = {}
         disk_details = self.model.lsblk.get(disk)
         if disk_details is None:
@@ -91,7 +91,7 @@ class mdl_presentor():
         '''
         output = {}
         for disk in self.model.lsblk.keys():
-            output[disk] = self.lsblk_disk_by_disk(disk)
+            output[disk] = self._partitions_all_lsblk_by_disk(disk)
 
         return output
 
