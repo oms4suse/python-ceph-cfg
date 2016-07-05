@@ -318,7 +318,10 @@ class mdl_presentor():
         '''
         output = []
         for part_name in self.model.partitions_journal:
-            part_info = self.lsblk_partition_by_disk_part(part_name)
+            disk = self.model.part_pairent.get(part_name)
+            if disk is None:
+                continue
+            part_info = self._partition_details(disk, part_name)
             if part_info is None:
                 continue
             output.append(part_info)
