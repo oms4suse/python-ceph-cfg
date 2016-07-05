@@ -164,8 +164,8 @@ class osd_ctrl(object):
 
 
     def _get_part_table_type(self,disk_name):
-        disk_details = self.model.lsblk.get(disk_name)
-        return disk_details.get("PARTTABLE")
+        disk_details = self.model.parted.get(disk_name)
+        return disk_details.get("table")
 
 
     def _prepare_check_partition_type_data(self, partition):
@@ -228,9 +228,6 @@ class osd_ctrl(object):
         # normalise paths
         osd_dev = os.path.realpath(osd_dev_raw)
         log.debug("Transfromed from '%s' to '%s'" % (osd_dev_raw, osd_dev))
-        # get existing state and see if action needed
-        u = mdl_updater.model_updater(self.model)
-        u.partition_table_refresh()
 
         # Validate the osd_uuid and journal_uuid dont already exist
 
