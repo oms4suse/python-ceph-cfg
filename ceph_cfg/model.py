@@ -28,7 +28,10 @@ class model(object):
     def __init__(self, **kwargs):
         # map device to symlinks
         self.symlinks = {}
+        # Discovered partions with lsblk
         self.lsblk = {}
+        # Discovered partions with parted
+        self.parted = {}
         # map partition to pairent
         self.part_pairent = {}
         self.partitions_osd = {}
