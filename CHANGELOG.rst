@@ -1,3 +1,20 @@
+0.1.5
+* Fixed purge function not deleteing keys.
+* Fixed handling of floppy disks on taget clusters
+* Added new discover fields for disks and partitions.
+  + disk
+    - 'DRIVER',
+    - 'SECTOR_SIZE_LOGICAL',
+    - 'SECTOR_SIZE_PHYSICAL',
+    - 'TABLE',
+    - 'VENDOR_NAME'
+  + partition
+    - 'NUMBER',
+    - 'SIZE_HUMAN'
+* Added test for lsblk version.
+* Added test for lsblk parsing
+* Added test for parted parsing
+
 0.1.4
 -----
 * Remove nose test from setup.py
