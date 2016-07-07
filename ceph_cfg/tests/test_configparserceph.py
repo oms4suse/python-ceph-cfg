@@ -1,7 +1,4 @@
 from ceph_cfg.util_configparser import ConfigParserCeph as ConfigParser
-
-import tempfile
-import os
 import io
 
 class Test_util_configparser(object):
