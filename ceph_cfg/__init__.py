@@ -775,6 +775,12 @@ def rgw_pools_missing(**kwargs):
 def rgw_create(**kwargs):
     """
     Create a rgw
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
     """
     ctrl_rgw = rgw.rgw_ctrl(**kwargs)
     ctrl_rgw.update()
