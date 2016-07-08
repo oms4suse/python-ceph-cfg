@@ -443,7 +443,7 @@ def keyring_osd_save(key_content=None, **kwargs):
 
 def keyring_osd_auth_add(**kwargs):
     """
-    Write admin keyring for cluster
+    Add osd keyring to cluster
 
     Args:
         **kwargs: Arbitrary keyword arguments.
