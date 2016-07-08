@@ -245,10 +245,6 @@ class mdl_presentor():
     def discover_osd_partitions(self):
         '''
         List all OSD and journal partitions
-
-        CLI Example:
-
-            salt '*' sesceph.discover_osd_partitions
         '''
         output = []
         for part_name in self.model.partitions_osd:
