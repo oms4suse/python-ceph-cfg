@@ -46,10 +46,6 @@ def partition_list():
 def partition_list_osd():
     '''
     List all OSD data partitions by partition
-
-    CLI Example:
-
-        salt '*' sesceph.partitions_osd
     '''
     m = model.model()
     u = mdl_updater.model_updater(m)
