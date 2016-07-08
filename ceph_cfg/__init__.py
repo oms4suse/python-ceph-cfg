@@ -585,23 +585,16 @@ def keyring_rgw_create(**kwargs):
 
 def keyring_rgw_save(key_content=None, **kwargs):
     """
-    Write rgw keyring for cluster
+    Write rgw bootstrap keyring for cluster to node
 
-    CLI Example:
-
-        salt '*' sesceph.keyring_rgw_save \\
-                '[rgw.]\n\tkey = AQA/vZ9WyDwsKRAAxQ6wjGJH6WV8fDJeyzxHrg==\n\tcaps rgw = \"allow *\"\n' \\
-                'cluster_name'='ceph' \\
-                'cluster_uuid'='cluster_uuid'
-    Notes:
-
-    cluster_uuid
-        Set the cluster UUID. Defaults to value found in ceph config file.
-
-    cluster_name
-        Set the cluster name. Defaults to "ceph".
-
-    If the value is set, it will not be changed untill the keyring is deleted.
+    Args:
+        key_content : The complete key including capabilities.
+        **kwargs: Arbitrary keyword arguments.
+            secret: The shared secret in the key
+            key_content : The complete key including capabilities.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
     """
     params = dict(kwargs)
     params["keyring_type"] = "rgw"
