@@ -458,7 +458,7 @@ def keyring_osd_auth_add(**kwargs):
 
 def keyring_osd_auth_del(**kwargs):
     """
-    Write rgw keyring for cluster
+    Remove osd keyring from cluster
 
     Args:
         **kwargs: Arbitrary keyword arguments.
