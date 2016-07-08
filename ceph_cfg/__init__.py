@@ -195,9 +195,25 @@ def osd_activate(**kwargs):
     """
     Activate an OSD
 
-    CLI Example:
-
-        salt '*' sesceph.osd_activate 'osd_dev'='/dev/vdc'
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid
+                Set the deivce to store the osd data on.
+            journal_dev
+                Set the journal device. defaults to osd_dev.
+            cluster_name
+                Set the cluster name. Defaults to "ceph".
+            cluster_uuid
+                Set the cluster date will be added too. Defaults to the value 
+                found in local config.
+            osd_fs_type
+                set the file system to store OSD data with. Defaults to "xfs".
+            osd_uuid
+                set the OSD data UUID. If set will return if OSD with data 
+                UUID already exists.
+            journal_uuid
+                set the OSD journal UUID. If set will return if OSD with journal 
+                UUID already exists.
     """
     return osd.osd_activate(**kwargs)
 
