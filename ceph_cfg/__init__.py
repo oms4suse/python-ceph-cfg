@@ -637,23 +637,13 @@ def keyring_rgw_auth_del(**kwargs):
 
 def keyring_rgw_purge(**kwargs):
     """
-    Delete rgw keyring for cluster
+    Delete mds keyring for cluster from node.
 
-    CLI Example:
-
-        salt '*' sesceph.keyring_rgw_purge \\
-                '[rgw.]\n\tkey = AQA/vZ9WyDwsKRAAxQ6wjGJH6WV8fDJeyzxHrg==\n\tcaps rgw = \"allow *\"\n' \\
-                'cluster_name'='ceph' \\
-                'cluster_uuid'='cluster_uuid'
-    Notes:
-
-    cluster_uuid
-        Set the cluster UUID. Defaults to value found in ceph config file.
-
-    cluster_name
-        Set the cluster name. Defaults to "ceph".
-
-    If no ceph config file is found, this command will fail.
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
     """
     params = dict(kwargs)
     params["keyring_type"] = "rgw"
