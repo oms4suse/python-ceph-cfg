@@ -178,10 +178,6 @@ class purger(object):
 def purge(mdl, **kwargs):
     """
     purge ceph configuration on the node
-
-    CLI Example:
-
-        salt '*' sesceph.purge
     """
     service_shutdown_ceph()
     pur_ctrl = purger(mdl)
