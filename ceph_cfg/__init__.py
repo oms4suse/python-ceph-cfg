@@ -86,11 +86,8 @@ def partition_is(dev):
     """
     Check whether a given device path is a partition or a full disk.
 
-    CLI Example:
-
-    .. code-block:: bash
-    salt '*' sesceph.partition_is /dev/sdc1
-
+    Args:
+        dev : Block device to test.
     """
     mdl = model.model()
     osdc = osd.osd_ctrl(mdl)
