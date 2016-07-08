@@ -87,13 +87,6 @@ class mon_implementation_base(object):
         """
         Is this a mon node
 
-        CLI Example:
-
-            salt '*' sesceph.keys_create
-                    'cluster_name'='ceph' \
-                    'cluster_uuid'='cluster_uuid' \
-        Notes:
-
         cluster_name
             Set the cluster name. Defaults to "ceph".
 
