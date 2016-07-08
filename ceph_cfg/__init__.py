@@ -859,33 +859,17 @@ def pool_add(pool_name, **kwargs):
     """
     List all cephx authorization keys
 
-    CLI Example:
-
-        salt '*' sesceph.pool_add pool_name \\
-                'cluster_name'='ceph' \\
-                'cluster_uuid'='cluster_uuid'
-    Notes:
-
-    cluster_name
-        Set the cluster name. Defaults to "ceph".
-
-    cluster_uuid
-        Set the cluster UUID. Defaults to value found in ceph config file.
-
-    pg_num
-        Default to 8
-
-    pgp_num
-        Default to pg_num
-
-    pool_type
-        can take values "replicated" or "erasure"
-
-    erasure_code_profile
-        Set the "erasure_code_profile"
-
-    crush_ruleset
-        Set the crush map rule set
+    Args:
+        pool_name: Pool to delete.
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+            pg_num : Default to 8
+            pgp_num : Default to pg_num
+            pool_type : can take values "replicated" or "erasure"
+            erasure_code_profile : Set the "erasure_code_profile"
+            crush_ruleset : Set the crush map rule set
     """
     m = model.model(**kwargs)
     u = mdl_updater.model_updater(m)
