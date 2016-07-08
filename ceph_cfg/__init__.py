@@ -35,10 +35,6 @@ class Error(Exception):
 def partition_list():
     '''
     List partitions by disk
-
-    CLI Example:
-
-        salt '*' sesceph.partitions_all
     '''
     m = model.model()
     u = mdl_updater.model_updater(m)
