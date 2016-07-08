@@ -420,21 +420,15 @@ def keyring_osd_create(**kwargs):
 
 def keyring_osd_save(key_content=None, **kwargs):
     """
-    Write admin keyring for cluster
+    Write osd keyring for cluster
 
-    CLI Example:
-
-        salt '*' sesceph.keyring_osd_save \\
-                '[osd.]\n\tkey = AQA/vZ9WyDwsKRAAxQ6wjGJH6WV8fDJeyzxHrg==\n\tcaps osd = \"allow *\"\n' \\
-                'cluster_name'='ceph' \\
-                'cluster_uuid'='cluster_uuid'
-    Notes:
-
-    cluster_uuid
-        Set the cluster UUID. Defaults to value found in ceph config file.
-
-    cluster_name
-        Set the cluster name. Defaults to "ceph".
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            secret: The shared secret in the key
+            key_content : The complete key including capabilities.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
     """
     params = dict(kwargs)
     params["keyring_type"] = "osd"
