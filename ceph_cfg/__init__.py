@@ -424,6 +424,7 @@ def keyring_osd_save(key_content=None, **kwargs):
     Write osd keyring for cluster
 
     Args:
+        key_content : The complete key including capabilities.
         **kwargs: Arbitrary keyword arguments.
             secret: The shared secret in the key
             key_content : The complete key including capabilities.
