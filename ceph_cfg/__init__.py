@@ -259,13 +259,11 @@ def keyring_present(**kwargs):
 
     Args:
         **kwargs: Arbitrary keyword arguments.
-            keyring_type
-                Required paramter
-                Can be set to: admin, mon, osd, rgw, mds
-            cluster_uuid
-                Set the cluster UUID. Defaults to value found in ceph config file.
-            cluster_name
-                Set the cluster name. Defaults to "ceph".
+            keyring_type : Required paramter. Can be set to: admin, mon, osd,
+                rgw, mds.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
     """
     return keyring_use.keyring_present_type(**kwargs)
 
