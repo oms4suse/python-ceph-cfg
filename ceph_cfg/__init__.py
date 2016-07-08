@@ -71,11 +71,6 @@ def partition_list_journal():
 def osd_discover():
     """
     List all OSD by cluster
-
-    CLI Example:
-
-        salt '*' sesceph.osd_discover
-
     """
     m = model.model()
     u = mdl_updater.model_updater(m)
