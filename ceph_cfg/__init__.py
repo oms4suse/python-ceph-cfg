@@ -936,9 +936,11 @@ def purge(**kwargs):
     """
     purge ceph configuration on the node
 
-    CLI Example:
-
-        salt '*' sesceph.purge
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
     """
     m = model.model(**kwargs)
     purger.purge(m, **kwargs)
