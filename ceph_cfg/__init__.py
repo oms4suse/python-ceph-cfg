@@ -794,6 +794,12 @@ def rgw_destroy(**kwargs):
 def mds_create(**kwargs):
     """
     Create a mds
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
     """
     ctrl_mds = mds.mds_ctrl(**kwargs)
     ctrl_mds.update()
