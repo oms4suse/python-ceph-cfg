@@ -59,10 +59,6 @@ def partition_list_osd():
 def partition_list_journal():
     '''
     List all OSD journal partitions by partition
-
-    CLI Example:
-
-        salt '*' sesceph.partitions_journal
     '''
     m = model.model()
     u = mdl_updater.model_updater(m)
