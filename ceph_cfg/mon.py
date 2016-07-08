@@ -138,7 +138,7 @@ class mon_implementation_base(object):
         Args:
             **kwargs: Arbitrary keyword arguments.
                 cluster_uuid
-                    Set the cluster UUID. Defaults to value found in ceph 
+                    Set the cluster UUID. Defaults to value found in ceph
                     config file.
                 cluster_name
                     Set the cluster name. Defaults to "ceph".
@@ -201,7 +201,7 @@ class mon_implementation_base(object):
         Args:
             **kwargs: Arbitrary keyword arguments.
                 cluster_uuid
-                    Set the cluster UUID. Defaults to value found in ceph 
+                    Set the cluster UUID. Defaults to value found in ceph
                     config file.
                 cluster_name
                     Set the cluster name. Defaults to "ceph".
