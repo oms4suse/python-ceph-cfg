@@ -177,7 +177,7 @@ def osd_prepare(**kwargs):
                 the value found in local config.
             osd_fs_type : Set the file system to store OSD data with. Defaults
                 to "xfs".
-            osd_uuid : Set the OSD data UUID. If set will return if OSD with 
+            osd_uuid : Set the OSD data UUID. If set will return if OSD with
                 data UUID already exists.
             journal_uuid : Set the OSD journal UUID. If set will return if OSD
                 with journal UUID already exists.
@@ -194,13 +194,13 @@ def osd_activate(**kwargs):
             cluster_uuid : Set the deivce to store the osd data on.
             journal_dev : Set the journal device. defaults to osd_dev.
             cluster_name : Set the cluster name. Defaults to "ceph".
-            cluster_uuid : Set the cluster date will be added too. Defaults to 
+            cluster_uuid : Set the cluster date will be added too. Defaults to
                 the value found in local config.
             osd_fs_type : Set the file system to store OSD data with. Defaults
                 to "xfs".
             osd_uuid : Set the OSD data UUID. If set will return if OSD with
                 data UUID already exists.
-            journal_uuid : Set the OSD journal UUID. If set will return if OSD 
+            journal_uuid : Set the OSD journal UUID. If set will return if OSD
                 with journal UUID already exists.
     """
     return osd.osd_activate(**kwargs)
@@ -212,13 +212,11 @@ def keyring_create(**kwargs):
 
     Args:
         **kwargs: Arbitrary keyword arguments.
-            keyring_type
-                Required paramter
-                Can be set to: admin, mon, osd, rgw, mds
-            cluster_uuid
-                Set the cluster UUID. Defaults to value found in ceph config file.
-            cluster_name
-                Set the cluster name. Defaults to "ceph".
+            keyring_type : Required paramter. Can be set to: admin, mon, osd,
+                rgw, mds.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
     """
     return keyring_use.keyring_create_type(**kwargs)
 
@@ -229,11 +227,11 @@ def keyring_save(**kwargs):
 
     Args:
         **kwargs: Arbitrary keyword arguments.
-            keyring_type: Required paramter. Can be set to: admin, mon, osd, 
+            keyring_type: Required paramter. Can be set to: admin, mon, osd,
                 rgw, mds
             secret: The shared secret in the key
             key_content : The complete key including capabilities.
-            cluster_uuid : Set the cluster UUID. Defaults to value found in 
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
                 ceph config file.
             cluster_name : Set the cluster name. Defaults to "ceph".
     """
