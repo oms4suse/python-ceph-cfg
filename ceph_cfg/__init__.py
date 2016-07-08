@@ -984,24 +984,11 @@ def cluster_quorum(**kwargs):
     """
     Get the cluster status
 
-    CLI Example:
-
-        salt '*' sesceph.cluster_status \\
-                'cluster_name'='ceph' \\
-                'cluster_uuid'='cluster_uuid'
-    Notes:
-    Get the cluster quorum status.
-
-    Scope:
-    Cluster wide
-
-    Arguments:
-
-    cluster_uuid
-        Set the cluster UUID. Defaults to value found in ceph config file.
-
-    cluster_name
-        Set the cluster name. Defaults to "ceph".
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
     """
     m = model.model(**kwargs)
     u = mdl_updater.model_updater(m)
