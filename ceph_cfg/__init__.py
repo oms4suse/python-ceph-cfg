@@ -905,18 +905,12 @@ def pool_del(pool_name, **kwargs):
     """
     List all cephx authorization keys
 
-    CLI Example:
-
-        salt '*' sesceph.pool_del pool_name \\
-                'cluster_name'='ceph' \\
-                'cluster_uuid'='cluster_uuid'
-    Notes:
-
-    cluster_name
-        Set the cluster name. Defaults to "ceph".
-
-    cluster_uuid
-        Set the cluster UUID. Defaults to value found in ceph config file.
+    Args:
+        pool_name: Pool to delete.
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
     """
     m = model.model(**kwargs)
     u = mdl_updater.model_updater(m)
