@@ -290,24 +290,15 @@ def keyring_auth_add(**kwargs):
     """
     Add keyring to authorised list
 
-    CLI Example:
-
-        salt '*' sesceph.keyring_mon_present \\
-                'keyring_type'='admin' \\
-                'cluster_name'='ceph' \\
-                'cluster_uuid'='cluster_uuid'
-    Notes:
-
-    keyring_type
-        Required paramter
-        Can be set to:
-            admin, mon, osd, rgw, mds
-
-    cluster_uuid
-        Set the cluster UUID. Defaults to value found in ceph config file.
-
-    cluster_name
-        Set the cluster name. Defaults to "ceph".
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            keyring_type
+                Required paramter
+                Can be set to: admin, mon, osd, rgw, mds
+            cluster_uuid
+                Set the cluster UUID. Defaults to value found in ceph config file.
+            cluster_name
+                Set the cluster name. Defaults to "ceph".
     """
     return keyring_use.keyring_auth_add_type(**kwargs)
 
