@@ -241,13 +241,13 @@ def keyring_save(**kwargs):
 
     Args:
         **kwargs: Arbitrary keyword arguments.
-            keyring_type
-                Required paramter
-                Can be set to: admin, mon, osd, rgw, mds
-            cluster_uuid
-                Set the cluster UUID. Defaults to value found in ceph config file.
-            cluster_name
-                Set the cluster name. Defaults to "ceph".
+            keyring_type: Required paramter. Can be set to: admin, mon, osd, 
+                rgw, mds
+            secret: The shared secret in the key
+            key_content : The complete key including capabilities.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in 
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
     """
     return keyring_use.keyring_save_type(**kwargs)
 
@@ -324,18 +324,12 @@ def keyring_admin_create(**kwargs):
     """
     Create admin keyring for cluster
 
-    CLI Example:
-
-        salt '*' sesceph.keyring_admin_create \\
-                'cluster_name'='ceph' \\
-                'cluster_uuid'='cluster_uuid'
-    Notes:
-
-    cluster_uuid
-        Set the cluster UUID. Defaults to value found in ceph config file.
-
-    cluster_name
-        Set the cluster name. Defaults to "ceph".
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid
+                Set the cluster UUID. Defaults to value found in ceph config file.
+            cluster_name
+                Set the cluster name. Defaults to "ceph".
     """
     params = dict(kwargs)
     params["keyring_type"] = "admin"
@@ -346,19 +340,12 @@ def keyring_admin_save(key_content=None, **kwargs):
     """
     Write admin keyring for cluster
 
-    CLI Example:
-
-        salt '*' sesceph.keyring_admin_save \\
-                '[mon.]\n\tkey = AQA/vZ9WyDwsKRAAxQ6wjGJH6WV8fDJeyzxHrg==\n\tcaps mon = \"allow *\"\n' \\
-                'cluster_name'='ceph' \\
-                'cluster_uuid'='cluster_uuid'
-    Notes:
-
-    cluster_uuid
-        Set the cluster UUID. Defaults to value found in ceph config file.
-
-    cluster_name
-        Set the cluster name. Defaults to "ceph".
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid
+                Set the cluster UUID. Defaults to value found in ceph config file.
+            cluster_name
+                Set the cluster name. Defaults to "ceph".
     """
     params = dict(kwargs)
     params["keyring_type"] = "admin"
