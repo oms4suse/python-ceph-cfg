@@ -203,10 +203,6 @@ class mdl_presentor():
     def partitions_all(self):
         '''
         List all partition details
-
-        CLI Example::
-
-            salt '*' sesceph.partitions_all
         '''
         output = {}
         for disk in self._disks_all():
