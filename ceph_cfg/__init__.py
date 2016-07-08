@@ -738,18 +738,12 @@ def mon_create(**kwargs):
     """
     Create a mon node
 
-    CLI Example:
 
-        salt '*' sesceph.mon_create \\
-                'cluster_name'='ceph' \\
-                'cluster_uuid'='cluster_uuid'
-    Notes:
-
-    cluster_uuid
-        Set the cluster UUID. Defaults to value found in ceph config file.
-
-    cluster_name
-        Set the cluster name. Defaults to "ceph".
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
     """
     ctrl_mon = mon.mon_facard(**kwargs)
     return ctrl_mon.create()
