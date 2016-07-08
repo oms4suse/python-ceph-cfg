@@ -503,23 +503,16 @@ def keyring_mds_create(**kwargs):
 
 def keyring_mds_save(key_content=None, **kwargs):
     """
-    Write mds keyring for cluster
+    Write mds bootstrap keyring for cluster to node
 
-    CLI Example:
-
-        salt '*' sesceph.keyring_mds_save \\
-                '[mds.]\n\tkey = AQA/vZ9WyDwsKRAAxQ6wjGJH6WV8fDJeyzxHrg==\n\tcaps mds = \"allow *\"\n' \\
-                'cluster_name'='ceph' \\
-                'cluster_uuid'='cluster_uuid'
-    Notes:
-
-    cluster_uuid
-        Set the cluster UUID. Defaults to value found in ceph config file.
-
-    cluster_name
-        Set the cluster name. Defaults to "ceph".
-
-    If the value is set, it will not be changed untill the keyring is deleted.
+    Args:
+        key_content : The complete key including capabilities.
+        **kwargs: Arbitrary keyword arguments.
+            secret: The shared secret in the key
+            key_content : The complete key including capabilities.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
     """
     params = dict(kwargs)
     params["keyring_type"] = "mds"
@@ -532,21 +525,13 @@ def keyring_mds_save(key_content=None, **kwargs):
 
 def keyring_mds_auth_add(**kwargs):
     """
-    Write mds keyring for cluster
+    Add mds bootstrap keyring to cluster.
 
-    CLI Example:
-
-        salt '*' sesceph.keyring_mds_auth_add \\
-                '[mds.]\n\tkey = AQA/vZ9WyDwsKRAAxQ6wjGJH6WV8fDJeyzxHrg==\n\tcaps mds = \"allow *\"\n' \\
-                'cluster_name'='ceph' \\
-                'cluster_uuid'='cluster_uuid'
-    Notes:
-
-    cluster_uuid
-        Set the cluster UUID. Defaults to value found in ceph config file.
-
-    cluster_name
-        Set the cluster name. Defaults to "ceph".
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
     """
     params = dict(kwargs)
     params["keyring_type"] = "mds"
