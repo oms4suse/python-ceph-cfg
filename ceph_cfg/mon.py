@@ -109,13 +109,6 @@ class mon_implementation_base(object):
         """
         Get status from mon deamon
 
-        CLI Example:
-
-            salt '*' sesceph.prepare
-                    'cluster_name'='ceph' \
-                    'cluster_uuid'='cluster_uuid' \
-        Notes:
-
         cluster_uuid
             Set the cluster UUID. Defaults to value found in ceph config file.
 
@@ -142,18 +135,13 @@ class mon_implementation_base(object):
         """
         Is mon deamon in quorum
 
-        CLI Example:
-
-            salt '*' sesceph.prepare
-                    'cluster_name'='ceph' \
-                    'cluster_uuid'='cluster_uuid' \
-        Notes:
-
-        cluster_uuid
-            Set the cluster UUID. Defaults to value found in ceph config file.
-
-        cluster_name
-            Set the cluster name. Defaults to "ceph".
+        Args:
+            **kwargs: Arbitrary keyword arguments.
+                cluster_uuid
+                    Set the cluster UUID. Defaults to value found in ceph 
+                    config file.
+                cluster_name
+                    Set the cluster name. Defaults to "ceph".
         """
         u = mdl_updater.model_updater(self.model)
         u.hostname_refresh()
