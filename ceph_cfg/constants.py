@@ -12,4 +12,4 @@ _path_ceph_lib_mds = os.path.join(_path_ceph_lib,"mds")
 
 
 # Make time out 2 mins for remote operations
-ceph_remote_call_timeout = 120
+ceph_remote_call_timeout = 20
