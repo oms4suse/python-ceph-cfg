@@ -209,7 +209,7 @@ class model_updater_remote():
         postfix_arguments = [
             "auth",
             "del",
-            keyringobj.keyring_path_get()
+            keyringobj.keyring_identity_get()
             ]
         connection_arguments = self.connection_arguments_get()
         arguments = prefix_arguments + connection_arguments + postfix_arguments
