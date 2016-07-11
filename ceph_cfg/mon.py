@@ -87,13 +87,6 @@ class mon_implementation_base(object):
         """
         Is this a mon node
 
-        CLI Example:
-
-            salt '*' sesceph.keys_create
-                    'cluster_name'='ceph' \
-                    'cluster_uuid'='cluster_uuid' \
-        Notes:
-
         cluster_name
             Set the cluster name. Defaults to "ceph".
 
@@ -115,13 +108,6 @@ class mon_implementation_base(object):
     def status(self, **kwargs):
         """
         Get status from mon deamon
-
-        CLI Example:
-
-            salt '*' sesceph.prepare
-                    'cluster_name'='ceph' \
-                    'cluster_uuid'='cluster_uuid' \
-        Notes:
 
         cluster_uuid
             Set the cluster UUID. Defaults to value found in ceph config file.
@@ -149,18 +135,13 @@ class mon_implementation_base(object):
         """
         Is mon deamon in quorum
 
-        CLI Example:
-
-            salt '*' sesceph.prepare
-                    'cluster_name'='ceph' \
-                    'cluster_uuid'='cluster_uuid' \
-        Notes:
-
-        cluster_uuid
-            Set the cluster UUID. Defaults to value found in ceph config file.
-
-        cluster_name
-            Set the cluster name. Defaults to "ceph".
+        Args:
+            **kwargs: Arbitrary keyword arguments.
+                cluster_uuid
+                    Set the cluster UUID. Defaults to value found in ceph
+                    config file.
+                cluster_name
+                    Set the cluster name. Defaults to "ceph".
         """
         u = mdl_updater.model_updater(self.model)
         u.hostname_refresh()
@@ -217,18 +198,13 @@ class mon_implementation_base(object):
         """
         Create a mon node
 
-        CLI Example:
-
-            salt '*' sesceph.prepare
-                    'cluster_name'='ceph' \
-                    'cluster_uuid'='cluster_uuid' \
-        Notes:
-
-        cluster_uuid
-            Set the cluster UUID. Defaults to value found in ceph config file.
-
-        cluster_name
-            Set the cluster name. Defaults to "ceph".
+        Args:
+            **kwargs: Arbitrary keyword arguments.
+                cluster_uuid
+                    Set the cluster UUID. Defaults to value found in ceph
+                    config file.
+                cluster_name
+                    Set the cluster name. Defaults to "ceph".
         """
         if util_which.which_ceph_mon.path is None:
             raise Error("Could not find executable 'ceph-mon'")

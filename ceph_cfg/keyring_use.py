@@ -42,21 +42,15 @@ def keyring_present_type(**kwargs):
     """
     Check if keyring exists on disk
 
-    CLI Example:
-
-        salt '*' sesceph.keyring_admin_save \\
-                '[mon.]\n\tkey = AQA/vZ9WyDwsKRAAxQ6wjGJH6WV8fDJeyzxHrg==\n\tcaps mon = \"allow *\"\n' \\
-                'cluster_name'='ceph' \\
-                'cluster_uuid'='cluster_uuid'
-    Notes:
-
-    cluster_uuid
-        Set the cluster UUID. Defaults to value found in ceph config file.
-
-    cluster_name
-        Set the cluster name. Defaults to "ceph".
-    keyring_type
-        Set the keyring type
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid
+                Set the cluster UUID. Defaults to value found in ceph 
+                config file.
+            cluster_name
+                Set the cluster name. Defaults to "ceph".
+            keyring_type
+                Set the keyring type
     """
     keyring_type = kwargs.get("keyring_type")
     if (keyring_type is None):
@@ -138,18 +132,15 @@ def keyring_auth_del_type(**kwargs):
     """
     Write rgw keyring for cluster
 
-    CLI Example:
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            keyring_type
+                Set the keyring type
+            cluster_uuid
+                Set the cluster UUID. Defaults to value found in ceph config file.
 
-        salt '*' sesceph.keyring_mds_auth_del \\
-                'cluster_name'='ceph' \\
-                'cluster_uuid'='cluster_uuid'
-    Notes:
-
-    cluster_uuid
-        Set the cluster UUID. Defaults to value found in ceph config file.
-
-    cluster_name
-        Set the cluster name. Defaults to "ceph".
+            cluster_name
+                Set the cluster name. Defaults to "ceph".
     """
     keyring_type = kwargs.get("keyring_type")
     if (keyring_type is None):

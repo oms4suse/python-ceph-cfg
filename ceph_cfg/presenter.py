@@ -203,10 +203,6 @@ class mdl_presentor():
     def partitions_all(self):
         '''
         List all partition details
-
-        CLI Example::
-
-            salt '*' sesceph.partitions_all
         '''
         output = {}
         for disk in self._disks_all():
@@ -249,10 +245,6 @@ class mdl_presentor():
     def discover_osd_partitions(self):
         '''
         List all OSD and journal partitions
-
-        CLI Example:
-
-            salt '*' sesceph.discover_osd_partitions
         '''
         output = []
         for part_name in self.model.partitions_osd:
@@ -268,10 +260,6 @@ class mdl_presentor():
     def discover_journal_partitions(self):
         '''
         List all OSD and journal partitions
-
-        CLI Example:
-
-            salt '*' sesceph.discover_osd_partitions
         '''
         output = []
         for part_name in self.model.partitions_journal:

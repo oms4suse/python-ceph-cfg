@@ -299,10 +299,6 @@ class model_updater():
     def discover_partitions_refresh(self):
         '''
         List all OSD and journal partitions
-
-        CLI Example:
-
-            salt '*' sesceph.discover_osd_partitions
         '''
         osd_all = set()
         journal_all = set()
