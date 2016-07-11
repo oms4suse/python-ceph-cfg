@@ -1,4 +1,4 @@
-import ConfigParser
+from util_configparser import ConfigParserCeph as ConfigParser
 
 
 class version(object):
@@ -36,7 +36,7 @@ class model(object):
         self.part_pairent = {}
         self.partitions_osd = {}
         self.partitions_journal = {}
-        self.ceph_conf = ConfigParser.ConfigParser()
+        self.ceph_conf = ConfigParser()
         # list of (hostname,addr) touples
         self.mon_members = []
         self.hostname = None
