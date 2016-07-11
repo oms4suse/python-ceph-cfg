@@ -1,4 +1,11 @@
+0.1.6
+-----
+* Added new docstrings to many methods.
+  + Old docstrings reflected the original salt useage best.
+* Fixed issue dealing with ' ' in key names in ceph ${cluster}.conf files.
+
 0.1.5
+-----
 * Fixed purge function not deleteing keys.
 * Fixed handling of floppy disks on taget clusters
 * Added new discover fields for disks and partitions.
