@@ -170,7 +170,7 @@ def osd_prepare(**kwargs):
 
     Args:
         **kwargs: Arbitrary keyword arguments.
-            cluster_uuid : Set the deivce to store the osd data on.
+            cluster_uuid : Set the cluster UUID.
             journal_dev : Set the journal device. defaults to osd_dev.
             cluster_name : Set the cluster name. Defaults to "ceph".
             cluster_uuid : Set the cluster date will be added too. Defaults to
@@ -191,7 +191,7 @@ def osd_activate(**kwargs):
 
     Args:
         **kwargs: Arbitrary keyword arguments.
-            cluster_uuid : Set the deivce to store the osd data on.
+            cluster_uuid : Set the cluster UUID.
             journal_dev : Set the journal device. defaults to osd_dev.
             cluster_name : Set the cluster name. Defaults to "ceph".
             cluster_uuid : Set the cluster date will be added too. Defaults to
