@@ -212,7 +212,7 @@ def keyring_create(**kwargs):
 
     Args:
         **kwargs: Arbitrary keyword arguments.
-            keyring_type : Required paramter. Can be set to: admin, mon, osd,
+            keyring_type : Required parameter. Can be set to: admin, mon, osd,
                 rgw, mds.
             cluster_uuid : Set the cluster UUID. Defaults to value found in
                 ceph config file.
@@ -227,7 +227,7 @@ def keyring_save(**kwargs):
 
     Args:
         **kwargs: Arbitrary keyword arguments.
-            keyring_type: Required paramter. Can be set to: admin, mon, osd,
+            keyring_type: Required parameter. Can be set to: admin, mon, osd,
                 rgw, mds
             secret: The shared secret in the key
             key_content : The complete key including capabilities.
@@ -244,7 +244,7 @@ def keyring_purge(**kwargs):
 
     Args:
         **kwargs: Arbitrary keyword arguments.
-            keyring_type : Required paramter. Can be set to: admin, mon, osd,
+            keyring_type : Required parameter. Can be set to: admin, mon, osd,
                 rgw, mds
             cluster_uuid : Set the cluster UUID. Defaults to value found in
                 ceph config file.
@@ -259,7 +259,7 @@ def keyring_present(**kwargs):
 
     Args:
         **kwargs: Arbitrary keyword arguments.
-            keyring_type : Required paramter. Can be set to: admin, mon, osd,
+            keyring_type : Required parameter. Can be set to: admin, mon, osd,
                 rgw, mds.
             cluster_uuid : Set the cluster UUID. Defaults to value found in
                 ceph config file.
@@ -274,7 +274,7 @@ def keyring_auth_add(**kwargs):
 
     Args:
         **kwargs: Arbitrary keyword arguments.
-            keyring_type : Required paramter. Can be set to: admin, mon, osd,
+            keyring_type : Required parameter. Can be set to: admin, mon, osd,
                 rgw, mds.
             cluster_uuid : Set the cluster UUID. Defaults to value found in
                 ceph config file.
@@ -290,8 +290,7 @@ def keyring_auth_del(**kwargs):
     Args:
         **kwargs: Arbitrary keyword arguments.
             keyring_type
-                Required paramter
-                Can be set to: admin, mon, osd, rgw, mds
+                Required parameter. Can be set to: admin, mon, osd, rgw, mds
             cluster_uuid
                 Set the cluster UUID. Defaults to value found in ceph config file.
             cluster_name
