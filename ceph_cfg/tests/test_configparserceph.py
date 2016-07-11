@@ -33,3 +33,14 @@ user 2 3 = mysql
         config.readfp(io.BytesIO(sample_config))
         value = config.get("mysqld", "user_2_3")
         assert value == "mysql"
+
+
+    def test_whitespace_as_underscore(self):
+        sample_config = """
+[mysqld]
+user_2 = mysql
+"""
+        config = ConfigParser()
+        config.readfp(io.BytesIO(sample_config))
+        value = config.get("mysqld", "user_2")
+        assert value == "mysql"
