@@ -30,7 +30,7 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
         self.service_name = "ceph-radosgw"
         # Set path to rgw binary
         self.path_service_bin = util_which.which_ceph_rgw.path
-
+        self.bootstrap_keyring_type = 'rgw'
 
     def _set_rgw_path_lib(self):
         if self.ceph_client_id == None:
@@ -131,31 +131,6 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
                         )
 
 
-    def _remove_rgw_keyring(self):
-        self._set_rgw_path_lib()
-        if not os.path.isdir(self.rgw_path_lib):
-            return
-        path_bootstrap_keyring = keyring._get_path_keyring_rgw(self.model.cluster_name)
-        arguments = [
-            'ceph',
-            '--connect-timeout',
-            '5',
-            '--cluster', self.model.cluster_name,
-            '--name', 'client.bootstrap-rgw',
-            '--keyring', path_bootstrap_keyring,
-            'auth', 'del', 'client.{name}'.format(name=self.ceph_client_id),
-        ]
-
-        output = utils.execute_local_command(arguments)
-        if output["retcode"] != 0:
-            raise Error("Failed executing '%s' Error rc=%s, stdout=%s stderr=%s" % (
-                    " ".join(arguments),
-                    output["retcode"],
-                    output["stdout"],
-                    output["stderr"])
-                    )
-
-
     def remove(self):
         self._set_rgw_path_lib()
         if not os.path.isdir(self.rgw_path_lib):
@@ -164,7 +139,7 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
         if os.path.isfile(rgw_path_keyring):
             log.info("Remove from auth list keyring:%s" % (rgw_path_keyring))
             try:
-                self._remove_rgw_keyring()
+                self.keyring_auth_remove()
             except Error:
                 log.error("Failed to remote from auth list")
         removetree = "%s/" % (self.rgw_path_lib)
