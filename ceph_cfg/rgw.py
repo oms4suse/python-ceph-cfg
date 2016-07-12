@@ -4,7 +4,6 @@ import logging
 import shutil
 
 # Local imports
-import utils
 import constants
 import util_which
 import keyring
@@ -31,6 +30,11 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
         # Set path to rgw binary
         self.path_service_bin = util_which.which_ceph_rgw.path
         self.bootstrap_keyring_type = 'rgw'
+        self.keyring_service_name = 'client.{name}'.format(name=self.ceph_client_id)
+        self.keyring_service_capabilities = [
+            'osd', 'allow rwx',
+            'mon', 'allow rw'
+            ]
 
     def _set_rgw_path_lib(self):
         if self.ceph_client_id == None:
@@ -101,34 +105,8 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
         if not os.path.isdir(self.rgw_path_lib):
             log.info("Make missing directory:%s" % (self.rgw_path_lib))
             os.makedirs(self.rgw_path_lib)
-        rgw_path_keyring = os.path.join(self.rgw_path_lib, 'keyring')
-        if not os.path.isfile(rgw_path_keyring):
-            log.info("Make missing keyring:%s" % (rgw_path_keyring))
-            arguments = [
-                'ceph',
-                '--connect-timeout',
-                '5',
-                '--cluster', self.model.cluster_name,
-                '--name', 'client.bootstrap-rgw',
-                '--keyring', path_bootstrap_keyring,
-                'auth', 'get-or-create', 'client.{name}'.format(name=self.ceph_client_id),
-                'osd', 'allow rwx',
-                'mon', 'allow rw',
-                '-o',
-                rgw_path_keyring
-            ]
-
-            output = utils.execute_local_command(arguments)
-            if output["retcode"] != 0:
-                if os.path.isfile(rgw_path_keyring):
-                    log.info("Cleaning up new key:%s" % (rgw_path_keyring))
-                    os.remove(rgw_path_keyring)
-                raise Error("Failed executing '%s' Error rc=%s, stdout=%s stderr=%s" % (
-                        " ".join(arguments),
-                        output["retcode"],
-                        output["stdout"],
-                        output["stderr"])
-                        )
+        self.keyring_service_path = os.path.join(self.rgw_path_lib, 'keyring')
+        self.keyring_service_create()
 
 
     def remove(self):
