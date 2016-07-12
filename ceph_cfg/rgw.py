@@ -30,16 +30,15 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
         self.service_name = "ceph-radosgw"
         # Set path to rgw binary
         self.path_service_bin = util_which.which_ceph_rgw.path
-        self.rgw_name = kwargs.get("name")
 
 
     def _set_rgw_path_lib(self):
-        if self.rgw_name == None:
+        if self.ceph_client_id == None:
             raise Error("rgw name not specified")
         self.rgw_path_lib = '{path}/{cluster}-{name}'.format(
             path=constants._path_ceph_lib_rgw,
             cluster=self.model.cluster_name,
-            name=self.rgw_name
+            name=self.ceph_client_id
             )
 
 
@@ -92,7 +91,7 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
         # this from the user is due to both the systemd files and rgw deployments may
         # exist without the prefix if the bootstrap keyring was not used in the key
         # creation for the rgw service.
-        if not self.rgw_name.startswith("rgw."):
+        if not self.ceph_client_id.startswith("rgw."):
             raise Error("rgw name must start with 'rgw.'")
         self.service_available()
         self._set_rgw_path_lib()
@@ -112,7 +111,7 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
                 '--cluster', self.model.cluster_name,
                 '--name', 'client.bootstrap-rgw',
                 '--keyring', path_bootstrap_keyring,
-                'auth', 'get-or-create', 'client.{name}'.format(name=self.rgw_name),
+                'auth', 'get-or-create', 'client.{name}'.format(name=self.ceph_client_id),
                 'osd', 'allow rwx',
                 'mon', 'allow rw',
                 '-o',
@@ -144,7 +143,7 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
             '--cluster', self.model.cluster_name,
             '--name', 'client.bootstrap-rgw',
             '--keyring', path_bootstrap_keyring,
-            'auth', 'del', 'client.{name}'.format(name=self.rgw_name),
+            'auth', 'del', 'client.{name}'.format(name=self.ceph_client_id),
         ]
 
         output = utils.execute_local_command(arguments)
