@@ -11,6 +11,8 @@ import mdl_updater
 import service
 import util_which
 import keyring
+import mdl_query
+import pwd
 
 
 log = logging.getLogger(__name__)
@@ -183,6 +185,13 @@ class ctrl_rados_client(object):
                             output["stderr"])
                             )
                 shutil.copy(key_path, self.keyring_service_path)
+                q = mdl_query.mdl_query(self.model)
+                ceph_daemon_user = q.ceph_daemon_user()
+                if ceph_daemon_user != 'root':
+                    pwd_struct = pwd.getpwnam(ceph_daemon_user)
+                    uid = pwd_struct.pw_uid
+                    gid = pwd_struct.pw_gid
+                    os.chown(self.keyring_service_path, uid, gid)
             finally:
                 shutil.rmtree(tmpd)
         finally:
