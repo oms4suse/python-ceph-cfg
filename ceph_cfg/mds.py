@@ -29,18 +29,17 @@ class mds_ctrl(rados_client.ctrl_rados_client):
         self.service_name = "ceph-mds"
         # Set path to mds binary
         self.path_service_bin = util_which.which_ceph_mds.path
-        self.mds_name = kwargs.get("name")
         self.port = kwargs.get("port")
         self.addr = kwargs.get("addr")
 
 
     def _set_mds_path_lib(self):
-        if self.mds_name == None:
+        if self.ceph_client_id == None:
             raise Error("mds name not specified")
         self.mds_path_lib = '{path}/{cluster}-{name}'.format(
             path=constants._path_ceph_lib_mds,
             cluster=self.model.cluster_name,
-            name=self.mds_name
+            name=self.ceph_client_id
             )
 
     def _set_path_systemd_env(self):
@@ -49,14 +48,14 @@ class mds_ctrl(rados_client.ctrl_rados_client):
             )
 
     def _set_mds_path_env(self):
-        if self.mds_name == None:
+        if self.ceph_client_id == None:
             raise Error("mds name not specified")
         if self.model.cluster_name == None:
             raise Error("cluster_name not specified")
         if self.model.path_systemd_env == None:
             raise Error("self.model.path_systemd_env not specified")
         self.model.mds_path_env = "{path_systemd_env}/{name}".format(
-            name=self.mds_name,
+            name=self.ceph_client_id,
             path_systemd_env=self.model.path_systemd_env
             )
 
@@ -89,7 +88,7 @@ class mds_ctrl(rados_client.ctrl_rados_client):
                 '--cluster', self.model.cluster_name,
                 '--name', 'client.bootstrap-mds',
                 '--keyring', path_bootstrap_keyring,
-                'auth', 'get-or-create', 'mds.{name}'.format(name=self.mds_name),
+                'auth', 'get-or-create', 'mds.{name}'.format(name=self.ceph_client_id),
                 'osd', 'allow rwx',
                 'mds', 'allow',
                 'mon', 'allow profile mds',
@@ -121,7 +120,7 @@ class mds_ctrl(rados_client.ctrl_rados_client):
             '--cluster', self.model.cluster_name,
             '--name', 'client.bootstrap-mds',
             '--keyring', path_bootstrap_keyring,
-            'auth', 'del', 'client.{name}'.format(name=self.mds_name),
+            'auth', 'del', 'client.{name}'.format(name=self.ceph_client_id),
         ]
 
         output = utils.execute_local_command(arguments)
@@ -161,7 +160,7 @@ class mds_ctrl(rados_client.ctrl_rados_client):
 
 
     def activate(self):
-        if self.mds_name == None:
+        if self.ceph_client_id == None:
             raise Error("name not specified")
         if self.port == None:
             raise Error("port not specified")
