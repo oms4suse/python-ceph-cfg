@@ -5,6 +5,8 @@ import utils
 import model
 import mdl_updater
 import service
+import util_which
+
 
 log = logging.getLogger(__name__)
 
@@ -30,6 +32,7 @@ class ctrl_rados_client(object):
         self.service_name = None
         self.model = model.model(**kwargs)
         self.model.init = "systemd"
+        self.bootstrap_keyring_type = None
 
 
     def service_available(self):
@@ -100,3 +103,30 @@ class ctrl_rados_client(object):
     def destroy(self):
         self.deactivate()
         self.remove()
+
+
+    def keyring_auth_remove(self):
+        if self.ceph_client_id == None:
+            raise Error("No client id specified")
+        if self.bootstrap_keyring_type == None:
+            raise Error("No bootstrap_keyring_type specified")
+        keyringobj = keyring.keyring_facard(self.model)
+        keyringobj.key_type = self.bootstrap_keyring_type
+        arguments = [
+            util_which.which_ceph.path,
+            '--connect-timeout',
+            '5',
+            '--cluster', self.model.cluster_name,
+            '--name', keyring_obj.keyring_identity_get()
+            '--keyring', keyringobj.keyring_path_get(),
+            'auth', 'del', 'client.{name}'.format(name=self.ceph_client_id),
+        ]
+
+        output = utils.execute_local_command(arguments)
+        if output["retcode"] != 0:
+            raise Error("Failed executing '%s' Error rc=%s, stdout=%s stderr=%s" % (
+                    " ".join(arguments),
+                    output["retcode"],
+                    output["stdout"],
+                    output["stderr"])
+                    )
