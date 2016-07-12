@@ -31,6 +31,7 @@ class mds_ctrl(rados_client.ctrl_rados_client):
         self.path_service_bin = util_which.which_ceph_mds.path
         self.port = kwargs.get("port")
         self.addr = kwargs.get("addr")
+        self.bootstrap_keyring_type = 'mds'
 
 
     def _set_mds_path_lib(self):
@@ -109,30 +110,6 @@ class mds_ctrl(rados_client.ctrl_rados_client):
                         )
 
 
-    def _remove_mds_keyring(self):
-        if not os.path.isdir(self.mds_path_lib):
-            return
-        path_bootstrap_keyring = keyring._get_path_keyring_mds(self.model.cluster_name)
-        arguments = [
-            'ceph',
-            '--connect-timeout',
-            '5',
-            '--cluster', self.model.cluster_name,
-            '--name', 'client.bootstrap-mds',
-            '--keyring', path_bootstrap_keyring,
-            'auth', 'del', 'client.{name}'.format(name=self.ceph_client_id),
-        ]
-
-        output = utils.execute_local_command(arguments)
-        if output["retcode"] != 0:
-            raise Error("Failed executing '%s' Error rc=%s, stdout=%s stderr=%s" % (
-                    " ".join(arguments),
-                    output["retcode"],
-                    output["stdout"],
-                    output["stderr"])
-                    )
-
-
     def remove(self):
         if os.path.isfile(self.model.mds_path_env):
             log.info("removing:%s" % (self.model.mds_path_env))
@@ -141,7 +118,7 @@ class mds_ctrl(rados_client.ctrl_rados_client):
             return
         mds_path_keyring = os.path.join(self.mds_path_lib, 'keyring')
         if os.path.isfile(mds_path_keyring):
-            self._remove_mds_keyring()
+            self.keyring_auth_remove()
         shutil.rmtree(self.mds_path_lib)
 
 
