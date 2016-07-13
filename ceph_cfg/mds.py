@@ -4,7 +4,6 @@ import logging
 import shutil
 
 # Local imports
-import utils
 import constants
 import keyring
 import rados_client
@@ -29,18 +28,24 @@ class mds_ctrl(rados_client.ctrl_rados_client):
         self.service_name = "ceph-mds"
         # Set path to mds binary
         self.path_service_bin = util_which.which_ceph_mds.path
-        self.mds_name = kwargs.get("name")
         self.port = kwargs.get("port")
         self.addr = kwargs.get("addr")
+        self.bootstrap_keyring_type = 'mds'
+        self.keyring_service_name = 'mds.{name}'.format(name=self.ceph_client_id)
+        self.keyring_service_capabilities = [
+            'osd', 'allow rwx',
+            'mds', 'allow',
+            'mon', 'allow profile mds',
+            ]
 
 
     def _set_mds_path_lib(self):
-        if self.mds_name == None:
+        if self.ceph_client_id == None:
             raise Error("mds name not specified")
         self.mds_path_lib = '{path}/{cluster}-{name}'.format(
             path=constants._path_ceph_lib_mds,
             cluster=self.model.cluster_name,
-            name=self.mds_name
+            name=self.ceph_client_id
             )
 
     def _set_path_systemd_env(self):
@@ -49,14 +54,14 @@ class mds_ctrl(rados_client.ctrl_rados_client):
             )
 
     def _set_mds_path_env(self):
-        if self.mds_name == None:
+        if self.ceph_client_id == None:
             raise Error("mds name not specified")
         if self.model.cluster_name == None:
             raise Error("cluster_name not specified")
         if self.model.path_systemd_env == None:
             raise Error("self.model.path_systemd_env not specified")
         self.model.mds_path_env = "{path_systemd_env}/{name}".format(
-            name=self.mds_name,
+            name=self.ceph_client_id,
             path_systemd_env=self.model.path_systemd_env
             )
 
@@ -79,59 +84,8 @@ class mds_ctrl(rados_client.ctrl_rados_client):
             log.info("mkdir %s" % (self.mds_path_lib))
             os.makedirs(self.mds_path_lib)
 
-        mds_path_keyring = os.path.join(self.mds_path_lib, 'keyring')
-        if not os.path.isfile(mds_path_keyring):
-            log.info("creating %s" % (mds_path_keyring))
-            arguments = [
-                'ceph',
-                '--connect-timeout',
-                '5',
-                '--cluster', self.model.cluster_name,
-                '--name', 'client.bootstrap-mds',
-                '--keyring', path_bootstrap_keyring,
-                'auth', 'get-or-create', 'mds.{name}'.format(name=self.mds_name),
-                'osd', 'allow rwx',
-                'mds', 'allow',
-                'mon', 'allow profile mds',
-                '-o',
-                mds_path_keyring
-            ]
-
-            output = utils.execute_local_command(arguments)
-            if output["retcode"] != 0:
-                if os.path.isfile(mds_path_keyring):
-                    log.info("Cleaning up new key:%s" % (mds_path_keyring))
-                    os.remove(mds_path_keyring)
-                raise Error("Failed executing '%s' Error rc=%s, stdout=%s stderr=%s" % (
-                        " ".join(arguments),
-                        output["retcode"],
-                        output["stdout"],
-                        output["stderr"])
-                        )
-
-
-    def _remove_mds_keyring(self):
-        if not os.path.isdir(self.mds_path_lib):
-            return
-        path_bootstrap_keyring = keyring._get_path_keyring_mds(self.model.cluster_name)
-        arguments = [
-            'ceph',
-            '--connect-timeout',
-            '5',
-            '--cluster', self.model.cluster_name,
-            '--name', 'client.bootstrap-mds',
-            '--keyring', path_bootstrap_keyring,
-            'auth', 'del', 'client.{name}'.format(name=self.mds_name),
-        ]
-
-        output = utils.execute_local_command(arguments)
-        if output["retcode"] != 0:
-            raise Error("Failed executing '%s' Error rc=%s, stdout=%s stderr=%s" % (
-                    " ".join(arguments),
-                    output["retcode"],
-                    output["stdout"],
-                    output["stderr"])
-                    )
+        self.keyring_service_path = os.path.join(self.mds_path_lib, 'keyring')
+        self.keyring_service_create()
 
 
     def remove(self):
@@ -142,7 +96,7 @@ class mds_ctrl(rados_client.ctrl_rados_client):
             return
         mds_path_keyring = os.path.join(self.mds_path_lib, 'keyring')
         if os.path.isfile(mds_path_keyring):
-            self._remove_mds_keyring()
+            self.keyring_auth_remove()
         shutil.rmtree(self.mds_path_lib)
 
 
@@ -161,7 +115,7 @@ class mds_ctrl(rados_client.ctrl_rados_client):
 
 
     def activate(self):
-        if self.mds_name == None:
+        if self.ceph_client_id == None:
             raise Error("name not specified")
         if self.port == None:
             raise Error("port not specified")

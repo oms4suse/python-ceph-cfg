@@ -4,7 +4,6 @@ import logging
 import shutil
 
 # Local imports
-import utils
 import constants
 import util_which
 import keyring
@@ -30,16 +29,20 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
         self.service_name = "ceph-radosgw"
         # Set path to rgw binary
         self.path_service_bin = util_which.which_ceph_rgw.path
-        self.rgw_name = kwargs.get("name")
-
+        self.bootstrap_keyring_type = 'rgw'
+        self.keyring_service_name = 'client.{name}'.format(name=self.ceph_client_id)
+        self.keyring_service_capabilities = [
+            'osd', 'allow rwx',
+            'mon', 'allow rw'
+            ]
 
     def _set_rgw_path_lib(self):
-        if self.rgw_name == None:
+        if self.ceph_client_id == None:
             raise Error("rgw name not specified")
         self.rgw_path_lib = '{path}/{cluster}-{name}'.format(
             path=constants._path_ceph_lib_rgw,
             cluster=self.model.cluster_name,
-            name=self.rgw_name
+            name=self.ceph_client_id
             )
 
 
@@ -92,7 +95,7 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
         # this from the user is due to both the systemd files and rgw deployments may
         # exist without the prefix if the bootstrap keyring was not used in the key
         # creation for the rgw service.
-        if not self.rgw_name.startswith("rgw."):
+        if not self.ceph_client_id.startswith("rgw."):
             raise Error("rgw name must start with 'rgw.'")
         self.service_available()
         self._set_rgw_path_lib()
@@ -102,59 +105,8 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
         if not os.path.isdir(self.rgw_path_lib):
             log.info("Make missing directory:%s" % (self.rgw_path_lib))
             os.makedirs(self.rgw_path_lib)
-        rgw_path_keyring = os.path.join(self.rgw_path_lib, 'keyring')
-        if not os.path.isfile(rgw_path_keyring):
-            log.info("Make missing keyring:%s" % (rgw_path_keyring))
-            arguments = [
-                'ceph',
-                '--connect-timeout',
-                '5',
-                '--cluster', self.model.cluster_name,
-                '--name', 'client.bootstrap-rgw',
-                '--keyring', path_bootstrap_keyring,
-                'auth', 'get-or-create', 'client.{name}'.format(name=self.rgw_name),
-                'osd', 'allow rwx',
-                'mon', 'allow rw',
-                '-o',
-                rgw_path_keyring
-            ]
-
-            output = utils.execute_local_command(arguments)
-            if output["retcode"] != 0:
-                if os.path.isfile(rgw_path_keyring):
-                    log.info("Cleaning up new key:%s" % (rgw_path_keyring))
-                    os.remove(rgw_path_keyring)
-                raise Error("Failed executing '%s' Error rc=%s, stdout=%s stderr=%s" % (
-                        " ".join(arguments),
-                        output["retcode"],
-                        output["stdout"],
-                        output["stderr"])
-                        )
-
-
-    def _remove_rgw_keyring(self):
-        self._set_rgw_path_lib()
-        if not os.path.isdir(self.rgw_path_lib):
-            return
-        path_bootstrap_keyring = keyring._get_path_keyring_rgw(self.model.cluster_name)
-        arguments = [
-            'ceph',
-            '--connect-timeout',
-            '5',
-            '--cluster', self.model.cluster_name,
-            '--name', 'client.bootstrap-rgw',
-            '--keyring', path_bootstrap_keyring,
-            'auth', 'del', 'client.{name}'.format(name=self.rgw_name),
-        ]
-
-        output = utils.execute_local_command(arguments)
-        if output["retcode"] != 0:
-            raise Error("Failed executing '%s' Error rc=%s, stdout=%s stderr=%s" % (
-                    " ".join(arguments),
-                    output["retcode"],
-                    output["stdout"],
-                    output["stderr"])
-                    )
+        self.keyring_service_path = os.path.join(self.rgw_path_lib, 'keyring')
+        self.keyring_service_create()
 
 
     def remove(self):
@@ -165,7 +117,7 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
         if os.path.isfile(rgw_path_keyring):
             log.info("Remove from auth list keyring:%s" % (rgw_path_keyring))
             try:
-                self._remove_rgw_keyring()
+                self.keyring_auth_remove()
             except Error:
                 log.error("Failed to remote from auth list")
         removetree = "%s/" % (self.rgw_path_lib)
