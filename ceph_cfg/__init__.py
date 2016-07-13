@@ -296,7 +296,7 @@ def keyring_auth_del(**kwargs):
             cluster_name
                 Set the cluster name. Defaults to "ceph".
     """
-    return keyring_use.keyring_auth_add_type(**kwargs)
+    return keyring_use.keyring_auth_del_type(**kwargs)
 
 
 def keyring_admin_create(**kwargs):

@@ -11,6 +11,7 @@ import keyring
 import utils
 import mdl_query
 import util_which
+import constants
 
 
 log = logging.getLogger(__name__)
@@ -41,7 +42,7 @@ class model_updater_remote():
         if self.keyring_type != None:
             return [
                     '--connect-timeout',
-                    '5',
+                    '%s' % (constants.ceph_remote_call_timeout),
                     "--keyring",
                     self.keyring_path,
                     "--name",
@@ -63,7 +64,7 @@ class model_updater_remote():
             arguments = [
                 util_which.which_ceph.path,
                 '--connect-timeout',
-                '5',
+                '%s' % (constants.ceph_remote_call_timeout),
                 "--keyring",
                 keyring_path,
                 "--name",
@@ -171,13 +172,17 @@ class model_updater_remote():
         q = mdl_query.mdl_query(self.model)
         if q.mon_is() and q.mon_quorum() is False:
             raise Error("mon daemon is not in quorum")
-        arguments = [
-                "ceph",
-                "auth",
-                "import",
-                "-i",
-                keyringobj.keyring_path_get()
-                ]
+        prefix_arguments = [
+            util_which.which_ceph.path
+        ]
+        postfix_arguments = [
+            "auth",
+            "import",
+            "-i",
+            keyringobj.keyring_path_get()
+            ]
+        connection_arguments = self.connection_arguments_get()
+        arguments = prefix_arguments + connection_arguments + postfix_arguments
         output = utils.execute_local_command(arguments)
         if output["retcode"] != 0:
             raise Error("Failed executing '%s' Error rc=%s, stdout=%s stderr=%s" % (
@@ -198,12 +203,16 @@ class model_updater_remote():
         q = mdl_query.mdl_query(self.model)
         if q.mon_is() and q.mon_quorum() is False:
             raise Error("mon daemon is not in quorum")
-        arguments = [
-                "ceph",
-                "auth",
-                "del",
-                keyringobj.keyring_path_get()
-                ]
+        prefix_arguments = [
+            util_which.which_ceph.path
+        ]
+        postfix_arguments = [
+            "auth",
+            "del",
+            keyringobj.keyring_identity_get()
+            ]
+        connection_arguments = self.connection_arguments_get()
+        arguments = prefix_arguments + connection_arguments + postfix_arguments
         output = utils.execute_local_command(arguments)
         if output["retcode"] != 0:
             raise Error("Failed executing '%s' Error rc=%s, stdout=%s stderr=%s" % (

@@ -11,3 +11,5 @@ _path_ceph_lib_rgw = os.path.join(_path_ceph_lib,"radosgw")
 _path_ceph_lib_mds = os.path.join(_path_ceph_lib,"mds")
 
 
+# Make time out in seconds for remote operations
+ceph_remote_call_timeout = 20
