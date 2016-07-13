@@ -339,6 +339,7 @@ class mon_implementation_base(object):
                 'service' : "ceph-mon",
             }
             self.init_system.restart(**arguments)
+            self.init_system.on_boot_enable(**arguments)
             self._create_check_retry()
             open(path_done_file, 'a').close()
         finally:
