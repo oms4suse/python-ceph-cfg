@@ -1,3 +1,11 @@
+0.1.7
+-----
+* Refactor rgw and mds to use common class to manage service keys.
+* Add central constant for timeouts and use it where applicable.
+  + Change default timeout to 20 seconds.
+* Fix permissions on mds and rgw service keys.
+* Enable mon daemons on boot.
+
 0.1.6
 -----
 * Added new docstrings to many methods.
@@ -6,8 +14,8 @@
 
 0.1.5
 -----
-* Fixed purge function not deleteing keys.
-* Fixed handling of floppy disks on taget clusters
+* Fixed purge function not deleting keys.
+* Fixed handling of floppy disks on target clusters
 * Added new discover fields for disks and partitions.
   + disk
     - 'DRIVER',
@@ -31,9 +39,9 @@
 * Add flake8 and py.test infrastructure
 * rgw: do not check for missing pools.
   + RGW pools have different names on Jewel.
-  + these pools are autocreated in Jewel.
+  + these pools are auto created in Jewel.
   + Creating pools which are not used for the 2 reasons above only increases pg's/pgp's per osd.
-  + Multisite/Multizone does probably not need these standard rgw pools.
+  + Multi site/Multi zone does probably not need these standard rgw pools.
 
 0.1.2
 -----
