@@ -13,6 +13,7 @@ import util_which
 import keyring
 import mdl_query
 import pwd
+import constants
 
 
 log = logging.getLogger(__name__)
@@ -125,7 +126,7 @@ class ctrl_rados_client(object):
         arguments = [
             util_which.which_ceph.path,
             '--connect-timeout',
-            '5',
+            '%s' % (constants.ceph_remote_call_timeout),
             '--cluster', self.model.cluster_name,
             '--name', keyringobj.keyring_identity_get(),
             '--keyring', keyringobj.keyring_path_get(),
@@ -165,7 +166,7 @@ class ctrl_rados_client(object):
                 arguments_prefix = [
                     util_which.which_ceph.path,
                     '--connect-timeout',
-                    '5',
+                    '%s' % (constants.ceph_remote_call_timeout),
                     '--cluster', self.model.cluster_name,
                     '--name', keyringobj.keyring_identity_get(),
                     '--keyring', keyringobj.keyring_path_get(),
