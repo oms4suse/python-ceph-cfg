@@ -386,13 +386,6 @@ class model_updater():
 
         for mon_split in mon_initial_members_name_raw.split(","):
             mon_initial_members_name_cleaned.append(mon_split.strip())
-        hostname = platform.node().split('.')[0]
-
-        try:
-            mon_initial_members_name_cleaned.index(hostname)
-        except:
-            log.debug("Mon not needed on %s" % (hostname))
-            return True
         try:
             mon_initial_members_addr_raw = self.model.ceph_conf.get("global","mon_host")
         except ConfigParser.NoOptionError:
