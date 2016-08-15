@@ -379,20 +379,13 @@ class model_updater():
         try:
             mon_initial_members_name_raw = self.model.ceph_conf.get("global","mon_initial_members")
         except ConfigParser.NoSectionError:
-            raise Error("Cluster config file does not set mon_initial_members")
+            raise Error("Cluster config file does not have a [global] section")
         except ConfigParser.NoOptionError:
             raise Error("Cluster config file does not set mon_initial_members")
         mon_initial_members_name_cleaned = []
 
         for mon_split in mon_initial_members_name_raw.split(","):
             mon_initial_members_name_cleaned.append(mon_split.strip())
-        hostname = platform.node().split('.')[0]
-
-        try:
-            mon_initial_members_name_cleaned.index(hostname)
-        except:
-            log.debug("Mon not needed on %s" % (hostname))
-            return True
         try:
             mon_initial_members_addr_raw = self.model.ceph_conf.get("global","mon_host")
         except ConfigParser.NoOptionError:
