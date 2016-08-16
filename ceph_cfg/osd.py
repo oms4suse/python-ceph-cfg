@@ -1,15 +1,16 @@
-# Python imports
+# Import Python Libs
+from __future__ import absolute_import
 import logging
 import os
 import stat
 
 # Local imports
-import utils
-import keyring
-import constants
-import model
-import mdl_updater
-import util_which
+from . import utils
+from . import keyring
+from . import constants
+from . import model
+from . import mdl_updater
+from . import util_which
 
 
 log = logging.getLogger(__name__)
