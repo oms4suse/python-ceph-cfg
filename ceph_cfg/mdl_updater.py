@@ -1,3 +1,6 @@
+# Import Python Libs
+from __future__ import absolute_import
+
 # Python imports
 import os
 import os.path
@@ -6,12 +9,15 @@ import logging
 import shlex
 import tempfile
 import json
-import ConfigParser
+try:
+    import ConfigParser
+except:
+    import configparser as ConfigParser
 
 # local modules
-import constants
-import utils
-import util_which
+from . import constants
+from . import utils
+from . import util_which
 
 
 log = logging.getLogger(__name__)
