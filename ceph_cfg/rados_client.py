@@ -1,19 +1,20 @@
-# Python imports
+# Import Python Libs
+from __future__ import absolute_import
 import logging
 import shutil
 import tempfile
 import os
+import pwd
 
 # Local imports
-import utils
-import model
-import mdl_updater
-import service
-import util_which
-import keyring
-import mdl_query
-import pwd
-import constants
+from . import utils
+from . import model
+from . import mdl_updater
+from . import service
+from . import util_which
+from . import keyring
+from . import mdl_query
+from . import constants
 
 
 log = logging.getLogger(__name__)
@@ -58,19 +59,19 @@ class ctrl_rados_client(object):
         self.updater.hostname_refresh()
         try:
             self.updater.defaults_refresh()
-        except utils.Error, e:
-            log.error(e)
+        except (utils.Error) as excpt:
+            log.error(excpt)
         if self.model.cluster_name == None:
             log.error("Cluster name not found")
         log.debug("Cluster name %s" % (self.model.cluster_name))
         try:
             self.updater.load_confg(self.model.cluster_name)
-        except mdl_updater.Error, e:
-            log.error(e)
+        except (mdl_updater.Error) as excpt:
+            log.error(excpt)
         try:
             self.updater.mon_members_refresh()
-        except mdl_updater.Error, e:
-            log.error(e)
+        except (mdl_updater.Error) as excpt:
+            log.error(excpt)
         self.init_system = service.init_system(init_type=self.model.init)
 
 
@@ -158,7 +159,7 @@ class ctrl_rados_client(object):
         log.info("Make missing keyring:%s" % (self.keyring_service_path))
         keyringobj = keyring.keyring_facard(self.model)
         keyringobj.key_type = self.bootstrap_keyring_type
-        oldmask = os.umask(077)
+        oldmask = os.umask(int('077', 8))
         try:
             try:
                 tmpd = tempfile.mkdtemp()
