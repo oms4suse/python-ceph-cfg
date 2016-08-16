@@ -1,8 +1,12 @@
+# Import Python Libs
+from __future__ import absolute_import
 import logging
 import os
-from util_configparser import ConfigParserCeph as ConfigParser
 import base64
 import binascii
+
+# local modules
+from . util_configparser import ConfigParserCeph as ConfigParser
 
 __has_salt = True
 
@@ -68,8 +72,6 @@ def _get_cluster_name_from_uuid(cluster_uuid):
         if file_name[-5:] != ".conf":
             continue
         fullpath = os.path.join("/etc/ceph/", file_name)
-        print fullpath
-
         config = ConfigParser()
         config.read(fullpath)
         try:
