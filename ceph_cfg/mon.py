@@ -1,4 +1,5 @@
-# Python imports
+# Import Python Libs
+from __future__ import absolute_import
 import logging
 import os
 import pwd
@@ -7,14 +8,14 @@ import shutil
 import time
 
 # Local imports
-import keyring
-import mdl_query
-import mdl_updater
-import model
-import presenter
-import utils
-import service
-import util_which
+from . import keyring
+from . import mdl_query
+from . import mdl_updater
+from . import model
+from . import presenter
+from . import utils
+from . import service
+from . import util_which
 
 
 log = logging.getLogger(__name__)
