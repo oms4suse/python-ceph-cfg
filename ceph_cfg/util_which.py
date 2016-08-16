@@ -19,14 +19,7 @@ class Error(Exception):
 
 
 class ExecutableNotFound(Error):
-    """
-    Executable not found exception
-    """
-    def __init__(self, executable):
-        self.executable = executable
-        
-    def __str__(self):
-        return "Could not find executable '%s'" % (self.executable)
+    pass
 
 
 class memoise_which:
@@ -47,8 +40,9 @@ class memoise_which:
                 return self._path
             self._path = find_executable(self.name)
             if self._path is None:
-                log.error("Could not find executable:", self.name)
-                raise ExecutableNotFound(self.name)
+                msg = "Could not find executable:{executable}".format(executable=self.name)
+                log.error(msg)
+                raise ExecutableNotFound(msg)
             return self._path
         return locals()
 
