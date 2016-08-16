@@ -1,14 +1,15 @@
-# Python imports
+# Import Python Libs
+from __future__ import absolute_import
 import os
 import logging
 import shutil
 
 # Local imports
-import constants
-import util_which
-import keyring
-import mdl_updater_remote
-import rados_client
+from . import constants
+from . import util_which
+from . import keyring
+from . import mdl_updater_remote
+from . import rados_client
 
 
 log = logging.getLogger(__name__)
@@ -82,8 +83,8 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
             log.info("Adding missing pool:%s" % (name))
             try:
                 mur.pool_add(name, pg_num=16)
-            except mdl_updater_remote.Error, e:
-                log.error(e)
+            except (mdl_updater_remote.Error) as excpt:
+                log.error(excpt)
                 log.error("Failed to add pool '%s'" % (name))
                 rc = False
         return rc
