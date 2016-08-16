@@ -1,17 +1,18 @@
 # This module is to update the model with remote commands.
 
-# Python imports
+# Import Python Libs
+from __future__ import absolute_import
 import logging
 import os
 import json
 import shlex
 
 # Local imports
-import keyring
-import utils
-import mdl_query
-import util_which
-import constants
+from . import keyring
+from . import utils
+from . import mdl_query
+from . import util_which
+from . import constants
 
 
 log = logging.getLogger(__name__)
