@@ -315,9 +315,9 @@ class keyring_facard(object):
                 raise ValueError("Programming error for key_type with value:%s" % (name))
             try:
                 implementation.get_path_keyring()
-            except (Error) as expt:
+            except (Error) as err:
                 self._clear_implementation()
-                raise expt
+                raise err
             self._keyImp = implementation
             self._keyType = name
             return self._keyType
