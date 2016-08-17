@@ -1,13 +1,14 @@
-# Python imports
+# Import Python Libs
+from __future__ import absolute_import
 import logging
 
 # local modules
-import model
-import mdl_updater
-import keyring
-import utils
-import mdl_query
-import mdl_updater_remote
+from . import model
+from . import mdl_updater
+from . import keyring
+from . import utils
+from . import mdl_query
+from . import mdl_updater_remote
 
 
 log = logging.getLogger(__name__)

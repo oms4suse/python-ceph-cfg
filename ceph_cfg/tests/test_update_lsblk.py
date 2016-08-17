@@ -68,7 +68,6 @@ class Test_mdl_updater_lsblk(object):
         partition = vda_details.get('PARTITION')
         assert len(partition.keys()) == 3
         partition_vda1 = partition.get('/dev/vda1')
-        print partition_vda1
         partition_vda1 != None
         RAND = partition_vda1.get('RAND')
         assert RAND == '0'

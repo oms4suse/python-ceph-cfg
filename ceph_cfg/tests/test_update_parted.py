@@ -75,7 +75,6 @@ class Test_mdl_updater_parted(object):
         partition = vda_details.get('partition')
         assert len(partition.keys()) == 3
         partition_vda1 = partition.get('/dev/vda1')
-        print partition_vda1
         partition_vda1 != None
         Number = partition_vda1.get('Number')
         assert Number == '1'

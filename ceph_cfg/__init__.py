@@ -1,23 +1,25 @@
+# Import Python Libs
+from __future__ import absolute_import
 import logging
 import stat
 import os.path
 import os
-import util_which
 import subprocess
 
 # local modules
-import utils
-import model
-import mdl_updater
-import presenter
-import mdl_query
-import osd
-import mon
-import rgw
-import mds
-import purger
-import mdl_updater_remote
-import keyring_use
+from . import util_which
+from . import utils
+from . import model
+from . import mdl_updater
+from . import presenter
+from . import mdl_query
+from . import osd
+from . import mon
+from . import rgw
+from . import mds
+from . import purger
+from . import mdl_updater_remote
+from . import keyring_use
 
 log = logging.getLogger(__name__)
 

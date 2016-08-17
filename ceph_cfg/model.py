@@ -1,4 +1,8 @@
-from util_configparser import ConfigParserCeph as ConfigParser
+# Import Python Libs
+from __future__ import absolute_import
+
+# local modules
+from . util_configparser import ConfigParserCeph as ConfigParser
 
 
 class version(object):

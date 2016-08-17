@@ -1,8 +1,10 @@
+# Import Python Libs
+from __future__ import absolute_import
 import logging
 
-
-import utils
-import util_which
+# Local imports
+from . import utils
+from . import util_which
 
 
 log = logging.getLogger(__name__)

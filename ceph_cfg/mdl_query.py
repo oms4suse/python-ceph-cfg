@@ -1,8 +1,9 @@
-# Python imports
+# Import Python Libs
+from __future__ import absolute_import
 import logging
 
 # Local imports
-import service
+from . import service
 
 log = logging.getLogger(__name__)
 
