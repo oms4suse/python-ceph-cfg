@@ -1,3 +1,10 @@
+0.1.8
+-----
+* Fix error messages for parsing ceph.conf.
+* Avoid side effect of not being mon node.
+* util.which fixes for runnign under salt.
+* Add tox testing for python3.
+
 0.1.7
 -----
 * Refactor rgw and mds to use common class to manage service keys.
