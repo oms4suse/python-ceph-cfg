@@ -59,19 +59,19 @@ class ctrl_rados_client(object):
         self.updater.hostname_refresh()
         try:
             self.updater.defaults_refresh()
-        except (utils.Error) as excpt:
-            log.error(excpt)
+        except (utils.Error) as err:
+            log.error(err)
         if self.model.cluster_name == None:
             log.error("Cluster name not found")
         log.debug("Cluster name %s" % (self.model.cluster_name))
         try:
             self.updater.load_confg(self.model.cluster_name)
-        except (mdl_updater.Error) as excpt:
-            log.error(excpt)
+        except (mdl_updater.Error) as err:
+            log.error(err)
         try:
             self.updater.mon_members_refresh()
-        except (mdl_updater.Error) as excpt:
-            log.error(excpt)
+        except (mdl_updater.Error) as err:
+            log.error(err)
         self.init_system = service.init_system(init_type=self.model.init)
 
 
