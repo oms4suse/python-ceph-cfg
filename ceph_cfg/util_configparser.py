@@ -10,7 +10,7 @@ class ConfigParserCeph(ConfigParser.ConfigParser):
         """
         Make config files with white space use '_'
         """
-        striped = s.strip()
-        replaced = striped.replace(' ', '_')
+        stripped = s.strip()
+        replaced = stripped.replace(' ', '_')
         return replaced
 
