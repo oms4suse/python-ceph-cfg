@@ -83,8 +83,8 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
             log.info("Adding missing pool:%s" % (name))
             try:
                 mur.pool_add(name, pg_num=16)
-            except (mdl_updater_remote.Error) as excpt:
-                log.error(excpt)
+            except (mdl_updater_remote.Error) as err:
+                log.error(err)
                 log.error("Failed to add pool '%s'" % (name))
                 rc = False
         return rc
