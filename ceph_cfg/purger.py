@@ -51,8 +51,8 @@ class purger(object):
         for keytype in ["mds", "rgw", "osd", "mon", "admin"]:
             try:
                 keyobj.key_type = keytype
-            except (ValueError) as excpt:
-                log.warning(excpt)
+            except (ValueError) as err:
+                log.warning(err)
                 continue
             if keyobj.present() is False:
                 log.info("Already removed '%s' keyring" % (keytype))
@@ -187,9 +187,9 @@ def purge(mdl, **kwargs):
     updater.hostname_refresh()
     try:
         updater.defaults_refresh()
-    except (utils.Error) as excpt:
+    except (utils.Error) as err:
         log.error("exception self.updater.defaults_refresh()")
-        log.error(excpt)
+        log.error(err)
     if mdl.cluster_name == None:
         log.error("Cluster name not found")
     else:
@@ -197,16 +197,16 @@ def purge(mdl, **kwargs):
             log.debug("Cluster name %s" % (mdl.cluster_name))
             updater.load_confg(mdl.cluster_name)
             updater.mon_members_refresh()
-        except (mdl_updater.Error) as excpt:
-            log.error(excpt)
+        except (mdl_updater.Error) as err:
+            log.error(err)
     pur_ctrl.auth_remove()
     updater.symlinks_refresh()
     updater.partitions_all_refresh()
     try:
         updater.discover_partitions_refresh()
-    except (utils.Error) as excpt:
+    except (utils.Error) as err:
         log.error("exception self.updater.defaults_refresh()")
-        log.error(excpt)
+        log.error(err)
     pur_ctrl.unmount_osd()
     pur_ctrl.list_files()
     pur_ctrl.remove_config()
