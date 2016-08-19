@@ -983,3 +983,83 @@ def cluster_status(**kwargs):
     p = presenter.mdl_presentor(m)
     return p.cluster_status()
 
+
+def cephfs_ls(**kwargs):
+    """
+    List all cephfs file systems
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+    """
+    m = model.model(**kwargs)
+    u = mdl_updater.model_updater(m)
+    u.hostname_refresh()
+    u.defaults_refresh()
+    u.load_confg(m.cluster_name)
+    u.mon_members_refresh()
+    mur = mdl_updater_remote.model_updater_remote(m)
+    can_connect = mur.connect()
+    if not can_connect:
+        raise Error("Cant connect to cluster.")
+    mur.cephfs_list()
+    p = presenter.mdl_presentor(m)
+    return p.cephfs_list()
+
+
+def cephfs_add(fs_name, **kwargs):
+    """
+    Make new cephfs file system
+
+    Args:
+        fs_name: file system name to create
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+            pool_data : ceph pool to store data in.
+            pool_metadata : ceph pool to store file system metadata in.
+    """
+    m = model.model(**kwargs)
+    u = mdl_updater.model_updater(m)
+    u.hostname_refresh()
+    u.defaults_refresh()
+    u.load_confg(m.cluster_name)
+    u.mon_members_refresh()
+    mur = mdl_updater_remote.model_updater_remote(m)
+    can_connect = mur.connect()
+    if not can_connect:
+        raise Error("Cant connect to cluster.")
+    # list the pools so we can check they exist
+    mur.pool_list()
+    # list the cephfs so we can check we need to do some thing
+    mur.cephfs_list()
+    return mur.cephfs_add(fs_name, **kwargs)
+
+
+def cephfs_del(fs_name, **kwargs):
+    """
+    Make new cephfs file system
+
+    Args:
+        fs_name: file system name to destroy
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+    """
+    m = model.model(**kwargs)
+    u = mdl_updater.model_updater(m)
+    u.hostname_refresh()
+    u.defaults_refresh()
+    u.load_confg(m.cluster_name)
+    u.mon_members_refresh()
+    mur = mdl_updater_remote.model_updater_remote(m)
+    can_connect = mur.connect()
+    if not can_connect:
+        raise Error("Cant connect to cluster.")
+    # list the cephfs so we can check we need to do some thing
+    mur.cephfs_list()
+    return mur.cephfs_del(fs_name, **kwargs)
