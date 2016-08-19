@@ -345,3 +345,7 @@ class mdl_presentor():
             "uuid" : self.model.ceph_version.uuid
         }
         return output
+
+
+    def cephfs_list(self):
+        return self.model.cephfs_list
