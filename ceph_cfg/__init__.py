@@ -21,6 +21,7 @@ from . import purger
 from . import mdl_updater_remote
 from . import ops_pool
 from . import ops_cephfs
+from . import ops_auth
 from . import keyring_use
 from . import osd_ops
 
@@ -841,11 +842,8 @@ def keyring_auth_list(**kwargs):
         return {}
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()
-    mur = mdl_updater_remote.model_updater_remote(m)
-    can_connect = mur.connect()
-    if not can_connect:
-        raise Error("Cant connect to cluster.")
-    mur.auth_list()
+    auth_ops = ops_auth.ops_auth(m)
+    auth_ops.auth_list()
     p = presenter.mdl_presentor(m)
     return p.auth_list()
 
