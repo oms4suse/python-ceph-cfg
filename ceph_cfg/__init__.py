@@ -20,6 +20,7 @@ from . import mds
 from . import purger
 from . import mdl_updater_remote
 from . import keyring_use
+from . import osd_ops
 
 log = logging.getLogger(__name__)
 
@@ -206,6 +207,26 @@ def osd_activate(**kwargs):
                 with journal UUID already exists.
     """
     return osd.osd_activate(**kwargs)
+
+
+def osd_reweight(**kwargs):
+    """
+    Reweight an OSD, or OSD's on node.
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+            cluster_uuid : Set the cluster date will be added too. Defaults to
+                the value found in local config.
+            osd_number : OSD number to reweight. Defaults to all OSD's on node.
+            osd_uuid : OSD uuid to reweight. Defaults to all OSD's on node.
+            weight : The new weight for the node. weight is a float, and must be
+                in the range 0 to 1.
+
+    Note:
+        Setting the weight to 0 will drain an OSD.
+    """
+    return osd_ops.reweight(**kwargs)
 
 
 def keyring_create(**kwargs):
