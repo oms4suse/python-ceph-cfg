@@ -8,7 +8,7 @@ import shutil
 from . import constants
 from . import util_which
 from . import keyring
-from . import mdl_updater_remote
+from . import ops_pool
 from . import rados_client
 
 
@@ -59,11 +59,8 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
                 ".users.swift",
                 ".users.uid"
             ])
-        mur = mdl_updater_remote.model_updater_remote(self.model)
-        can_connect = mur.connect()
-        if not can_connect:
-            raise Error("Cant connect to cluster.")
-        mur.pool_list()
+        pool_ops = ops_pool.ops_pool(self.model)
+        pool_ops.pool_list()
         if self.model.pool_list == None:
             log.error("Failed to list available pools")
             return False
@@ -75,15 +72,13 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
 
     def rgw_pools_create(self):
         rc = True
-        mur = mdl_updater_remote.model_updater_remote(self.model)
-        can_connect = mur.connect()
-        if not can_connect:
-            raise Error("Cant connect to cluster.")
+        pool_ops = ops_pool.ops_pool(self.model)
+        pool_ops.pool_list()
         for name in self.rgw_pools_missing():
             log.info("Adding missing pool:%s" % (name))
             try:
-                mur.pool_add(name, pg_num=16)
-            except (mdl_updater_remote.Error) as err:
+                pool_ops.pool_add(name, pg_num=16)
+            except (ops_pool.Error) as err:
                 log.error(err)
                 log.error("Failed to add pool '%s'" % (name))
                 rc = False
