@@ -25,6 +25,13 @@ class version(object):
         return "<version(%s,%s,%s,%s)>" % (self.major, self.minor, self.revision, self.uuid)
 
 
+class connection(object):
+    def __init__(self, **kwargs):
+        self.keyring_type = kwargs.get("keyring_type")
+        self.keyring_path = kwargs.get("keyring_path")
+        self.keyring_identity = kwargs.get("keyring_identity")
+
+
 class model(object):
     """
     Basic model class to store detrived data
@@ -49,6 +56,8 @@ class model(object):
         self.lsblk_version = version()
         # Result of local query of mon status
         self.mon_status = None
+        # Remote connection details
+        self.connection = connection()
 
 
     def kargs_apply(self, **kwargs):
