@@ -20,6 +20,7 @@ from . import mds
 from . import purger
 from . import mdl_updater_remote
 from . import ops_pool
+from . import ops_cephfs
 from . import keyring_use
 from . import osd_ops
 
@@ -1013,11 +1014,8 @@ def cephfs_ls(**kwargs):
     u.defaults_refresh()
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()
-    mur = mdl_updater_remote.model_updater_remote(m)
-    can_connect = mur.connect()
-    if not can_connect:
-        raise Error("Cant connect to cluster.")
-    mur.cephfs_list()
+    cephfs_ops = ops_cephfs.ops_cephfs(m)
+    cephfs_ops.cephfs_list()
     p = presenter.mdl_presentor(m)
     return p.cephfs_list()
 
@@ -1041,16 +1039,12 @@ def cephfs_add(fs_name, **kwargs):
     u.defaults_refresh()
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()
-    mur = mdl_updater_remote.model_updater_remote(m)
-    can_connect = mur.connect()
-    if not can_connect:
-        raise Error("Cant connect to cluster.")
-    # list the pools so we can check they exist
     pool_ops = ops_pool.ops_pool(m)
     pool_ops.pool_list()
     # list the cephfs so we can check we need to do some thing
-    mur.cephfs_list()
-    return mur.cephfs_add(fs_name, **kwargs)
+    cephfs_ops = ops_cephfs.ops_cephfs(m)
+    cephfs_ops.cephfs_list()
+    return cephfs_ops.cephfs_add(fs_name, **kwargs)
 
 
 def cephfs_del(fs_name, **kwargs):
@@ -1070,10 +1064,7 @@ def cephfs_del(fs_name, **kwargs):
     u.defaults_refresh()
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()
-    mur = mdl_updater_remote.model_updater_remote(m)
-    can_connect = mur.connect()
-    if not can_connect:
-        raise Error("Cant connect to cluster.")
+    cephfs_ops = ops_cephfs.ops_cephfs(m)
     # list the cephfs so we can check we need to do some thing
-    mur.cephfs_list()
-    return mur.cephfs_del(fs_name, **kwargs)
+    cephfs_ops.cephfs_list()
+    return cephfs_ops.cephfs_del(fs_name, **kwargs)
