@@ -19,6 +19,7 @@ from . import rgw
 from . import mds
 from . import purger
 from . import mdl_updater_remote
+from . import ops_pool
 from . import keyring_use
 from . import osd_ops
 
@@ -867,11 +868,8 @@ def pool_list(**kwargs):
         return {}
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()
-    mur = mdl_updater_remote.model_updater_remote(m)
-    can_connect = mur.connect()
-    if not can_connect:
-        raise Error("Cant connect to cluster.")
-    mur.pool_list()
+    pool_ops = ops_pool.ops_pool(m)
+    pool_ops.pool_list()
     p = presenter.mdl_presentor(m)
     return p.pool_list()
 
@@ -899,12 +897,9 @@ def pool_add(pool_name, **kwargs):
     u.defaults_refresh()
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()
-    mur = mdl_updater_remote.model_updater_remote(m)
-    can_connect = mur.connect()
-    if not can_connect:
-        raise Error("Cant connect to cluster.")
-    mur.pool_list()
-    return mur.pool_add(pool_name, **kwargs)
+    pool_ops = ops_pool.ops_pool(m)
+    pool_ops.pool_list()
+    return pool_ops.pool_add(pool_name, **kwargs)
 
 
 def pool_del(pool_name, **kwargs):
@@ -924,12 +919,9 @@ def pool_del(pool_name, **kwargs):
     u.defaults_refresh()
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()
-    mur = mdl_updater_remote.model_updater_remote(m)
-    can_connect = mur.connect()
-    if not can_connect:
-        raise Error("Cant connect to cluster.")
-    mur.pool_list()
-    return mur.pool_del(pool_name)
+    pool_ops = ops_pool.ops_pool(m)
+    pool_ops.pool_list()
+    return pool_ops.pool_del(pool_name)
 
 
 def purge(**kwargs):
@@ -1054,7 +1046,8 @@ def cephfs_add(fs_name, **kwargs):
     if not can_connect:
         raise Error("Cant connect to cluster.")
     # list the pools so we can check they exist
-    mur.pool_list()
+    pool_ops = ops_pool.ops_pool(m)
+    pool_ops.pool_list()
     # list the cephfs so we can check we need to do some thing
     mur.cephfs_list()
     return mur.cephfs_add(fs_name, **kwargs)
