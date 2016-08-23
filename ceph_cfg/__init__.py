@@ -18,12 +18,12 @@ from . import mon
 from . import rgw
 from . import mds
 from . import purger
-from . import mdl_updater_remote
 from . import ops_pool
 from . import ops_cephfs
 from . import ops_auth
+from . import ops_cluster
 from . import keyring_use
-from . import osd_ops
+from . import ops_osd
 
 log = logging.getLogger(__name__)
 
@@ -229,7 +229,7 @@ def osd_reweight(**kwargs):
     Note:
         Setting the weight to 0 will drain an OSD.
     """
-    return osd_ops.reweight(**kwargs)
+    return ops_osd.reweight(**kwargs)
 
 
 def keyring_create(**kwargs):
@@ -964,10 +964,8 @@ def cluster_quorum(**kwargs):
     u.defaults_refresh()
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()
-    mur = mdl_updater_remote.model_updater_remote(m)
-    can_connect = mur.connect()
-    if not can_connect:
-        return False
+    cluster_ops = ops_cluster.ops_cluster(m)
+    cluster_ops.status_refresh()
     q = mdl_query.mdl_query(m)
     return q.cluster_quorum()
 
@@ -988,10 +986,8 @@ def cluster_status(**kwargs):
     u.defaults_refresh()
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()
-    mur = mdl_updater_remote.model_updater_remote(m)
-    can_connect = mur.connect()
-    if not can_connect:
-        raise Error("Cant connect to cluster.")
+    cluster_ops = ops_cluster.ops_cluster(m)
+    cluster_ops.status_refresh()
     p = presenter.mdl_presentor(m)
     return p.cluster_status()
 
