@@ -221,8 +221,7 @@ def osd_reweight(**kwargs):
             cluster_name : Set the cluster name. Defaults to "ceph".
             cluster_uuid : Set the cluster date will be added too. Defaults to
                 the value found in local config.
-            osd_number : OSD number to reweight. Defaults to all OSD's on node.
-            osd_uuid : OSD uuid to reweight. Defaults to all OSD's on node.
+            osd_number : OSD number to reweight.
             weight : The new weight for the node. weight is a float, and must be
                 in the range 0 to 1.
 
