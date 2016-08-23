@@ -75,8 +75,7 @@ def reweight(**kwargs):
             cluster_name : Set the cluster name. Defaults to "ceph".
             cluster_uuid : Set the cluster date will be added too. Defaults to
                 the value found in local config.
-            osd_number : OSD number to reweight. Defaults to all OSD's on node.
-            osd_uuid : OSD uuid to reweight. Defaults to all OSD's on node.
+            osd_number : OSD number to reweight.
             weight : The new weight for the node. weight is a float, and must be
                 in the range 0 to 1.
 
@@ -100,6 +99,6 @@ def reweight(**kwargs):
     if weight is None:
         raise Error("weight is not specified")
     if osd_number_input is None:
-        pass
+        raise Error("osd_number is not specified")
     osd_ops = ops_osd(mdl)
     osd_ops.reweight(osd_number_input, weight)
