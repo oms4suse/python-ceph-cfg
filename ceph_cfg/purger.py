@@ -184,7 +184,7 @@ def purge(mdl, **kwargs):
     service_shutdown_ceph()
     pur_ctrl = purger(mdl)
     updater = mdl_updater.model_updater(mdl)
-    updater.hostname_refresh()
+    updater.defaults_hostname()
     try:
         updater.defaults_refresh()
     except (utils.Error) as err:
