@@ -24,17 +24,29 @@ class Error(Exception):
         return ': '.join([doc] + [str(a) for a in self.args])
 
 
+def _update_keyring_model(mdl):
+    u = mdl_updater.model_updater(mdl)
+    u.defaults_hostname()
+    u.defaults_refresh()
+
+
+def _update_auth_model(mdl):
+    u = mdl_updater.model_updater(mdl)
+    u.load_confg(mdl.cluster_name)
+    u.mon_members_refresh()
+    q = mdl_query.mdl_query(mdl)
+    if q.mon_is():
+        u.mon_status()
+
+
 def keyring_create_type(**kwargs):
     keyring_type = kwargs.get("keyring_type")
     if (keyring_type is None):
         raise Error("keyring_type is None")
     secret = kwargs.get("secret")
     m = model.model(**kwargs)
-    u = mdl_updater.model_updater(m)
-    u.hostname_refresh()
-    u.defaults_refresh()
-    u.load_confg(m.cluster_name)
-    u.mon_members_refresh()
+    mdl_updater.model_updater(m)
+    _update_keyring_model(m)
     keyobj = keyring.keyring_facard(m)
     keyobj.key_type = keyring_type
     return keyobj.create(secret=secret)
@@ -58,10 +70,8 @@ def keyring_present_type(**kwargs):
     if (keyring_type is None):
         raise Error("keyring_type is None")
     m = model.model(**kwargs)
-    u = mdl_updater.model_updater(m)
-    u.hostname_refresh()
     try:
-        u.defaults_refresh()
+        _update_keyring_model(m)
     except:
         pass
     keyobj = keyring.keyring_facard(m)
@@ -74,11 +84,7 @@ def keyring_purge_type(**kwargs):
     if (keyring_type is None):
         raise Error("keyring_type is not set")
     m = model.model(**kwargs)
-    u = mdl_updater.model_updater(m)
-    u.hostname_refresh()
-    u.defaults_refresh()
-    u.load_confg(m.cluster_name)
-    u.mon_members_refresh()
+    _update_keyring_model(m)
     keyobj = keyring.keyring_facard(m)
     keyobj.key_type = keyring_type
     return keyobj.remove()
@@ -89,11 +95,7 @@ def keyring_save_type(**kwargs):
     key_content = kwargs.get("key_content")
     secret = kwargs.get("secret")
     m = model.model(**kwargs)
-    u = mdl_updater.model_updater(m)
-    u.hostname_refresh()
-    u.defaults_refresh()
-    u.load_confg(m.cluster_name)
-    u.mon_members_refresh()
+    _update_keyring_model(m)
     keyobj = keyring.keyring_facard(m)
     keyobj.key_type = keyring_type
     if secret is not None:
@@ -111,14 +113,8 @@ def keyring_auth_add_type(**kwargs):
     if (keyring_type in set(["mon","admin"])):
         raise Error("keyring_type is %s" % (keyring_type))
     m = model.model(**kwargs)
-    u = mdl_updater.model_updater(m)
-    u.hostname_refresh()
-    u.defaults_refresh()
-    u.load_confg(m.cluster_name)
-    u.mon_members_refresh()
-    q = mdl_query.mdl_query(m)
-    if q.mon_is():
-        u.mon_status()
+    _update_keyring_model(m)
+    _update_auth_model(m)
     keyobj = keyring.keyring_facard(m)
     keyobj.key_type = keyring_type
     if not keyobj.present():
@@ -147,14 +143,8 @@ def keyring_auth_del_type(**kwargs):
     if (keyring_type in set(["mon","admin"])):
         raise Error("keyring_type is %s" % (keyring_type))
     m = model.model(**kwargs)
-    u = mdl_updater.model_updater(m)
-    u.hostname_refresh()
-    u.defaults_refresh()
-    u.load_confg(m.cluster_name)
-    u.mon_members_refresh()
-    q = mdl_query.mdl_query(m)
-    if q.mon_is():
-        u.mon_status()
+    _update_keyring_model(m)
+    _update_auth_model(m)
     keyobj = keyring.keyring_facard(m)
     keyobj.key_type = keyring_type
     if not keyobj.present():
