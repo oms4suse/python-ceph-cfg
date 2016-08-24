@@ -93,9 +93,6 @@ class model_updater():
     def __init__(self, model):
         self.model = model
 
-    def hostname_refresh(self):
-        self.model.hostname = platform.node().split('.')[0]
-
 
     def defaults_hostname(self):
         if self.model.hostname is None:
