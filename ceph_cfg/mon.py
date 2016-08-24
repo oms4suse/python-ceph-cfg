@@ -24,11 +24,20 @@ log = logging.getLogger(__name__)
 def Property(func):
     return property(**func())
 
+
 class Error(Exception):
     """
     Error
     """
+    def __str__(self):
+        doc = self.__doc__.strip()
+        return ': '.join([doc] + [str(a) for a in self.args])
 
+
+class ErrorNotMon(Error):
+    """
+    Error when its not a mon
+    """
     def __str__(self):
         doc = self.__doc__.strip()
         return ': '.join([doc] + [str(a) for a in self.args])
@@ -94,14 +103,6 @@ class mon_implementation_base(object):
         cluster_uuid
             Set the cluster UUID. Defaults to value found in ceph config file.
         """
-        u = mdl_updater.model_updater(self.model)
-        u.hostname_refresh()
-        try:
-            u.defaults_refresh()
-        except:
-            return False
-        u.load_confg(self.model.cluster_name)
-        u.mon_members_refresh()
         q = mdl_query.mdl_query(self.model)
         return q.mon_is()
 
@@ -117,16 +118,6 @@ class mon_implementation_base(object):
             Set the cluster name. Defaults to "ceph".
         """
         u = mdl_updater.model_updater(self.model)
-        u.hostname_refresh()
-        try:
-            u.defaults_refresh()
-        except:
-            return {}
-        u.load_confg(self.model.cluster_name)
-        u.mon_members_refresh()
-        q = mdl_query.mdl_query(self.model)
-        if not q.mon_is():
-            raise Error("Not a mon node")
         u.mon_status()
         p = presenter.mdl_presentor(self.model)
         return p.mon_status()
@@ -145,13 +136,6 @@ class mon_implementation_base(object):
                     Set the cluster name. Defaults to "ceph".
         """
         u = mdl_updater.model_updater(self.model)
-        u.hostname_refresh()
-        try:
-            u.defaults_refresh()
-        except:
-            raise Error("Could not get cluster details")
-        u.load_confg(self.model.cluster_name)
-        u.mon_members_refresh()
         u.mon_status()
         q = mdl_query.mdl_query(self.model)
         return q.mon_quorum()
@@ -210,14 +194,7 @@ class mon_implementation_base(object):
         if util_which.which_ceph_mon.path is None:
             raise Error("Could not find executable 'ceph-mon'")
 
-        u = mdl_updater.model_updater(self.model)
-        u.hostname_refresh()
-        u.defaults_refresh()
-        u.load_confg(self.model.cluster_name)
-        u.mon_members_refresh()
         q = mdl_query.mdl_query(self.model)
-        if not q.mon_is():
-            raise Error("Not a mon node")
 
         path_done_file = "/var/lib/ceph/mon/%s-%s/done" % (
                 self.model.cluster_name,
@@ -353,8 +330,6 @@ class mon_implementation_base(object):
         """
         Is mon deamon running
         """
-        u = mdl_updater.model_updater(self.model)
-        u.hostname_refresh()
         q = mdl_query.mdl_query(self.model)
         return q.mon_active()
 
@@ -384,8 +359,8 @@ class mod_user_ceph(mon_implementation_base):
 
 
 class mon_facard(object):
-    def __init__(self, **kwargs):
-        self.model = model.model(**kwargs)
+    def __init__(self, model, **kwargs):
+        self.model = model
         self._clear_implementation()
         u = mdl_updater.model_updater(self.model)
         u.ceph_version_refresh()
@@ -459,3 +434,99 @@ class mon_facard(object):
         if self._monImp is None:
             raise Error("Programming error: key type unset")
         return self._monImp.active(**kwargs)
+
+
+def _update_mon_model(model):
+    u = mdl_updater.model_updater(model)
+    u.defaults_hostname()
+    u.defaults_refresh()
+    u.load_confg(model.cluster_name)
+    u.mon_members_refresh()
+    q = mdl_query.mdl_query(model)
+    if not q.mon_is():
+        msg = "Host '{hostname}' is not a mon node".format(hostname=model.hostname)
+        log.error(msg)
+        raise ErrorNotMon(msg)
+
+
+def mon_is(**kwargs):
+    """
+    Is this a mon node
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+    """
+    mdl = model.model(**kwargs)
+    try:
+        _update_mon_model(mdl)
+    except ErrorNotMon:
+        return False
+    ctrl_mon = mon_facard(mdl, **kwargs)
+    return ctrl_mon.is_mon()
+
+
+def mon_status(**kwargs):
+    """
+    Get status from mon deamon
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+    """
+    mdl = model.model(**kwargs)
+    _update_mon_model(mdl)
+    ctrl_mon = mon_facard(mdl, **kwargs)
+    return ctrl_mon.status()
+
+
+def mon_quorum(**kwargs):
+    """
+    Is mon deamon in quorum
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+    """
+    mdl = model.model(**kwargs)
+    _update_mon_model(mdl)
+    ctrl_mon = mon_facard(mdl, **kwargs)
+    return ctrl_mon.quorum()
+
+
+def mon_active(**kwargs):
+    """
+    Is mon deamon running
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+    """
+    mdl = model.model(**kwargs)
+    _update_mon_model(mdl)
+    ctrl_mon = mon_facard(mdl, **kwargs)
+    return ctrl_mon.active()
+
+
+def mon_create(**kwargs):
+    """
+    Create a mon node
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+    """
+    mdl = model.model(**kwargs)
+    _update_mon_model(mdl)
+    ctrl_mon = mon_facard(mdl, **kwargs)
+    return ctrl_mon.create()
