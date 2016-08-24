@@ -97,6 +97,11 @@ class model_updater():
         self.model.hostname = platform.node().split('.')[0]
 
 
+    def defaults_hostname(self):
+        if self.model.hostname is None:
+            self.model.hostname = platform.node().split('.')[0]
+
+
     def defaults_refresh(self):
         # Default cluster name / uuid values
         if self.model.cluster_name is None and self.model.cluster_uuid is None:
