@@ -18,8 +18,12 @@ from . import mon
 from . import rgw
 from . import mds
 from . import purger
-from . import mdl_updater_remote
+from . import ops_pool
+from . import ops_cephfs
+from . import ops_auth
+from . import ops_cluster
 from . import keyring_use
+from . import ops_osd
 
 log = logging.getLogger(__name__)
 
@@ -206,6 +210,25 @@ def osd_activate(**kwargs):
                 with journal UUID already exists.
     """
     return osd.osd_activate(**kwargs)
+
+
+def osd_reweight(**kwargs):
+    """
+    Reweight an OSD, or OSD's on node.
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+            cluster_uuid : Set the cluster date will be added too. Defaults to
+                the value found in local config.
+            osd_number : OSD number to reweight.
+            weight : The new weight for the node. weight is a float, and must be
+                in the range 0 to 1.
+
+    Note:
+        Setting the weight to 0 will drain an OSD.
+    """
+    return ops_osd.reweight(**kwargs)
 
 
 def keyring_create(**kwargs):
@@ -818,11 +841,8 @@ def keyring_auth_list(**kwargs):
         return {}
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()
-    mur = mdl_updater_remote.model_updater_remote(m)
-    can_connect = mur.connect()
-    if not can_connect:
-        raise Error("Cant connect to cluster.")
-    mur.auth_list()
+    auth_ops = ops_auth.ops_auth(m)
+    auth_ops.auth_list()
     p = presenter.mdl_presentor(m)
     return p.auth_list()
 
@@ -846,11 +866,8 @@ def pool_list(**kwargs):
         return {}
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()
-    mur = mdl_updater_remote.model_updater_remote(m)
-    can_connect = mur.connect()
-    if not can_connect:
-        raise Error("Cant connect to cluster.")
-    mur.pool_list()
+    pool_ops = ops_pool.ops_pool(m)
+    pool_ops.pool_list()
     p = presenter.mdl_presentor(m)
     return p.pool_list()
 
@@ -878,12 +895,9 @@ def pool_add(pool_name, **kwargs):
     u.defaults_refresh()
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()
-    mur = mdl_updater_remote.model_updater_remote(m)
-    can_connect = mur.connect()
-    if not can_connect:
-        raise Error("Cant connect to cluster.")
-    mur.pool_list()
-    return mur.pool_add(pool_name, **kwargs)
+    pool_ops = ops_pool.ops_pool(m)
+    pool_ops.pool_list()
+    return pool_ops.pool_add(pool_name, **kwargs)
 
 
 def pool_del(pool_name, **kwargs):
@@ -903,12 +917,9 @@ def pool_del(pool_name, **kwargs):
     u.defaults_refresh()
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()
-    mur = mdl_updater_remote.model_updater_remote(m)
-    can_connect = mur.connect()
-    if not can_connect:
-        raise Error("Cant connect to cluster.")
-    mur.pool_list()
-    return mur.pool_del(pool_name)
+    pool_ops = ops_pool.ops_pool(m)
+    pool_ops.pool_list()
+    return pool_ops.pool_del(pool_name)
 
 
 def purge(**kwargs):
@@ -952,10 +963,8 @@ def cluster_quorum(**kwargs):
     u.defaults_refresh()
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()
-    mur = mdl_updater_remote.model_updater_remote(m)
-    can_connect = mur.connect()
-    if not can_connect:
-        return False
+    cluster_ops = ops_cluster.ops_cluster(m)
+    cluster_ops.status_refresh()
     q = mdl_query.mdl_query(m)
     return q.cluster_quorum()
 
@@ -976,10 +985,8 @@ def cluster_status(**kwargs):
     u.defaults_refresh()
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()
-    mur = mdl_updater_remote.model_updater_remote(m)
-    can_connect = mur.connect()
-    if not can_connect:
-        raise Error("Cant connect to cluster.")
+    cluster_ops = ops_cluster.ops_cluster(m)
+    cluster_ops.status_refresh()
     p = presenter.mdl_presentor(m)
     return p.cluster_status()
 
@@ -1000,11 +1007,8 @@ def cephfs_ls(**kwargs):
     u.defaults_refresh()
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()
-    mur = mdl_updater_remote.model_updater_remote(m)
-    can_connect = mur.connect()
-    if not can_connect:
-        raise Error("Cant connect to cluster.")
-    mur.cephfs_list()
+    cephfs_ops = ops_cephfs.ops_cephfs(m)
+    cephfs_ops.cephfs_list()
     p = presenter.mdl_presentor(m)
     return p.cephfs_list()
 
@@ -1028,15 +1032,12 @@ def cephfs_add(fs_name, **kwargs):
     u.defaults_refresh()
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()
-    mur = mdl_updater_remote.model_updater_remote(m)
-    can_connect = mur.connect()
-    if not can_connect:
-        raise Error("Cant connect to cluster.")
-    # list the pools so we can check they exist
-    mur.pool_list()
+    pool_ops = ops_pool.ops_pool(m)
+    pool_ops.pool_list()
     # list the cephfs so we can check we need to do some thing
-    mur.cephfs_list()
-    return mur.cephfs_add(fs_name, **kwargs)
+    cephfs_ops = ops_cephfs.ops_cephfs(m)
+    cephfs_ops.cephfs_list()
+    return cephfs_ops.cephfs_add(fs_name, **kwargs)
 
 
 def cephfs_del(fs_name, **kwargs):
@@ -1056,10 +1057,7 @@ def cephfs_del(fs_name, **kwargs):
     u.defaults_refresh()
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()
-    mur = mdl_updater_remote.model_updater_remote(m)
-    can_connect = mur.connect()
-    if not can_connect:
-        raise Error("Cant connect to cluster.")
+    cephfs_ops = ops_cephfs.ops_cephfs(m)
     # list the cephfs so we can check we need to do some thing
-    mur.cephfs_list()
-    return mur.cephfs_del(fs_name, **kwargs)
+    cephfs_ops.cephfs_list()
+    return cephfs_ops.cephfs_del(fs_name, **kwargs)

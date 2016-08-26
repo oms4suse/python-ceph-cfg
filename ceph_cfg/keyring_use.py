@@ -8,7 +8,7 @@ from . import mdl_updater
 from . import keyring
 from . import utils
 from . import mdl_query
-from . import mdl_updater_remote
+from . import ops_auth
 
 
 log = logging.getLogger(__name__)
@@ -22,6 +22,7 @@ class Error(Exception):
     def __str__(self):
         doc = self.__doc__.strip()
         return ': '.join([doc] + [str(a) for a in self.args])
+
 
 def keyring_create_type(**kwargs):
     keyring_type = kwargs.get("keyring_type")
@@ -102,6 +103,7 @@ def keyring_save_type(**kwargs):
         return keyobj.write_content(key_content)
     raise Error("Set either the key_content or the key `secret`")
 
+
 def keyring_auth_add_type(**kwargs):
     keyring_type = kwargs.get("keyring_type")
     if (keyring_type is None):
@@ -121,12 +123,8 @@ def keyring_auth_add_type(**kwargs):
     keyobj.key_type = keyring_type
     if not keyobj.present():
         raise Error("keyring not present")
-    mur = mdl_updater_remote.model_updater_remote(m)
-    can_connect = mur.connect()
-    if not can_connect:
-        raise Error("Cant connect to cluster.")
-    return mur.auth_add(keyring_type)
-
+    auth_ops = ops_auth.ops_auth(m)
+    return auth_ops.auth_add(keyring_type)
 
 
 def keyring_auth_del_type(**kwargs):
@@ -161,11 +159,8 @@ def keyring_auth_del_type(**kwargs):
     keyobj.key_type = keyring_type
     if not keyobj.present():
         raise Error("keyring not present")
-    mur = mdl_updater_remote.model_updater_remote(m)
-    can_connect = mur.connect()
-    if not can_connect:
-        raise Error("Cant connect to cluster.")
-    return mur.auth_del(keyring_type)
+    auth_ops = ops_auth.ops_auth(m)
+    return auth_ops.auth_del(keyring_type)
 
 
 
