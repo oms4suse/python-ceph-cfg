@@ -737,10 +737,10 @@ def mon_create(**kwargs):
 
     Args:
         **kwargs: Arbitrary keyword arguments.
+            mon_name : Set the mon serrvice name. Required
             cluster_uuid : Set the cluster UUID. Defaults to value found in
                 ceph config file.
             cluster_name : Set the cluster name. Defaults to "ceph".
-            hostname : Set the hostname. Defaults to the configured hostname.
     """
     return mon.mon_create(**kwargs)
 
