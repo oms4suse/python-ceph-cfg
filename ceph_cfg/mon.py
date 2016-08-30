@@ -193,26 +193,23 @@ class mon_implementation_base(object):
                 cluster_name
                     Set the cluster name. Defaults to "ceph".
         """
+        service_name = kwargs.get("mon_name")
+        if service_name is None:
+            raise Error("Service name for mon is not specified as 'mon_name'")
         if util_which.which_ceph_mon.path is None:
             raise Error("Could not find executable 'ceph-mon'")
 
         q = mdl_query.mdl_query(self.model)
 
-        path_done_file = "/var/lib/ceph/mon/%s-%s/done" % (
+        path_mon_dir_postfix = "/%s-%s" % (
                 self.model.cluster_name,
-                self.model.hostname
+                service_name
             )
-        keyring_path_mon = keyring._get_path_keyring_mon(self.model.cluster_name, self.model.hostname)
-        path_mon_dir = "/var/lib/ceph/mon/%s-%s" % (
-                self.model.cluster_name,
-                self.model.hostname
-            )
-
+        path_mon_dir = constants._path_ceph_lib_mon + path_mon_dir_postfix
+        path_done_file = path_mon_dir + "/done"
         path_admin_keyring = keyring._get_path_keyring_admin(self.model.cluster_name)
+        keyring_path_mon = keyring._get_path_keyring_mon(self.model.cluster_name)
 
-        path_monmap = "/var/lib/ceph/tmp/%s.monmap" % (
-                self.model.cluster_name
-            )
         if os.path.isfile(path_done_file):
             log.debug("Mon done file exists:%s" % (path_done_file))
             if q.mon_active():
@@ -220,7 +217,7 @@ class mon_implementation_base(object):
             arguments = [
                 util_which.which_systemctl.path,
                 "restart",
-                "ceph-mon@%s" % (self.model.hostname)
+                "ceph-mon@%s" % (service_name)
                 ]
             output = utils.execute_local_command(arguments)
             if output["retcode"] != 0:
@@ -295,7 +292,7 @@ class mon_implementation_base(object):
                     util_which.which_ceph_mon.path,
                     "--mkfs",
                     "-i",
-                    self.model.hostname,
+                    service_name,
                     "--monmap",
                     path_monmap,
                     '--keyring',
@@ -315,7 +312,7 @@ class mon_implementation_base(object):
                 raise Error("Failed to create '%s'" % (path_mon_key))
             # Now start the service
             arguments = {
-                'identifier' : self.model.hostname,
+                'identifier' : service_name,
                 'service' : "ceph-mon",
             }
             self.init_system.restart(**arguments)
@@ -342,7 +339,8 @@ class mon_implementation_base(object):
         """
         subdirs = []
         for dir_entry in os.listdir(constants._path_ceph_lib_mon):
-            if not os.path.isdir(dir_entry):
+            path = os.path.join(constants._path_ceph_lib_mon, dir_entry)
+            if not os.path.isdir(path):
                 continue
             subdirs.append(dir_entry)
         mon_services = {}
