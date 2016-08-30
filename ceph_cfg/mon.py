@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 import logging
 import os
+import os.path
 import pwd
 import tempfile
 import shutil
@@ -16,6 +17,7 @@ from . import presenter
 from . import utils
 from . import service
 from . import util_which
+from . import constants
 
 
 log = logging.getLogger(__name__)
@@ -334,6 +336,31 @@ class mon_implementation_base(object):
         return q.mon_active()
 
 
+    def list(self, **kwargs):
+        """
+        Update model of local mons
+        """
+        subdirs = []
+        for dir_entry in os.listdir(constants._path_ceph_lib_mon):
+            if not os.path.isdir(dir_entry):
+                continue
+            subdirs.append(dir_entry)
+        mon_services = {}
+        for directory in subdirs:
+            dir_split = directory.split('-')
+            if len(dir_split) == 1:
+                log.warning("mon directory is invalid")
+                continue
+            head = dir_split[0]
+            tail = '-'.join(dir_split[1:])
+            if not head in mon_services:
+                mon_services[head] = [tail]
+            else:
+                mon_services[head].append(tail)
+        self.model.mon_local_services = mon_services
+        return self.model.mon_local_services
+
+
 class mod_user_root(mon_implementation_base):
     def __init__(self, mdl):
         mon_implementation_base.__init__(self, mdl)
@@ -436,6 +463,12 @@ class mon_facard(object):
         return self._monImp.active(**kwargs)
 
 
+    def list(self, **kwargs):
+        if self._monImp is None:
+            raise Error("Programming error: key type unset")
+        return self._monImp.list(**kwargs)
+
+
 def _update_mon_model(model):
     u = mdl_updater.model_updater(model)
     u.defaults_hostname()
@@ -530,3 +563,19 @@ def mon_create(**kwargs):
     _update_mon_model(mdl)
     ctrl_mon = mon_facard(mdl, **kwargs)
     return ctrl_mon.create()
+
+
+def mon_list(**kwargs):
+    """
+    Create a mon node
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+    """
+    mdl = model.model(**kwargs)
+    _update_mon_model(mdl)
+    ctrl_mon = mon_facard(mdl, **kwargs)
+    return ctrl_mon.list()
