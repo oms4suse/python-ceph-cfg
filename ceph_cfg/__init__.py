@@ -745,6 +745,19 @@ def mon_create(**kwargs):
     return mon.mon_create(**kwargs)
 
 
+def mon_list(**kwargs):
+    """
+    Create a mon node
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+    """
+    return mon.mon_list(**kwargs)
+
+
 def rgw_pools_create(**kwargs):
     """
     Create pools for rgw
