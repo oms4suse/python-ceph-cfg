@@ -143,12 +143,11 @@ class mon_implementation_base(object):
         return q.mon_quorum()
 
 
-    def _create_check_responding(self):
+    def _create_check_responding(self, **kwargs):
         """
         Check the mon service is runnign and responding.
         """
-        q = mdl_query.mdl_query(self.model)
-        if not q.mon_active():
+        if not self.active(**kwargs):
             raise Error("mon service has died.")
         u = mdl_updater.model_updater(self.model)
         try:
@@ -158,7 +157,7 @@ class mon_implementation_base(object):
         return True
 
 
-    def _create_check_retry(self):
+    def _create_check_retry(self, **kwargs):
         """
         Check the mon service is started and responding with time out.
 
@@ -169,13 +168,13 @@ class mon_implementation_base(object):
         timeout = 60
         time_start = time.clock()
         time_end = time_start + timeout
-        if self._create_check_responding():
+        if self._create_check_responding(**kwargs):
             return True
         while time.clock() < time_end:
             log.info("Mon service did not start up, waiting.")
             time.sleep(5)
             log.info("Retrying mon service.")
-            if self._create_check_responding():
+            if self._create_check_responding(**kwargs):
                 return True
         log.error("Timed out starting mon service")
         raise Error("Failed to get mon service status after '%s' seconds." % (timeout))
@@ -199,8 +198,6 @@ class mon_implementation_base(object):
         if util_which.which_ceph_mon.path is None:
             raise Error("Could not find executable 'ceph-mon'")
 
-        q = mdl_query.mdl_query(self.model)
-
         path_mon_dir_postfix = "/%s-%s" % (
                 self.model.cluster_name,
                 service_name
@@ -212,7 +209,7 @@ class mon_implementation_base(object):
 
         if os.path.isfile(path_done_file):
             log.debug("Mon done file exists:%s" % (path_done_file))
-            if q.mon_active():
+            if self.active(**kwargs):
                 return True
             arguments = [
                 util_which.which_systemctl.path,
@@ -229,7 +226,7 @@ class mon_implementation_base(object):
                     )
 
             # Error is servcie wont start
-            if not q.mon_active():
+            if not self.active(**kwargs):
                  raise Error("Failed to start monitor")
             return True
 
@@ -317,7 +314,7 @@ class mon_implementation_base(object):
             }
             self.init_system.restart(**arguments)
             self.init_system.on_boot_enable(**arguments)
-            self._create_check_retry()
+            self._create_check_retry(**kwargs)
             open(path_done_file, 'a').close()
         finally:
             log.info("Destroy temp directory %s" %(tmpd))
@@ -329,8 +326,15 @@ class mon_implementation_base(object):
         """
         Is mon deamon running
         """
-        q = mdl_query.mdl_query(self.model)
-        return q.mon_active()
+        service_name = kwargs.get("mon_name")
+        if service_name is None:
+            raise Error("Service name for mon is not specified as 'mon_name'")
+        arguments = {
+                'identifier' : service_name,
+                'service' : "ceph-mon",
+            }
+        init_system = service.init_system(init_type=self.model.init)
+        return init_system.is_running(**arguments)
 
 
     def list(self, **kwargs):
@@ -560,7 +564,7 @@ def mon_create(**kwargs):
     mdl = model.model(**kwargs)
     _update_mon_model(mdl)
     ctrl_mon = mon_facard(mdl, **kwargs)
-    return ctrl_mon.create()
+    return ctrl_mon.create(**kwargs)
 
 
 def mon_list(**kwargs):
