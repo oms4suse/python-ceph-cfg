@@ -242,8 +242,6 @@ def keyring_create(**kwargs):
             cluster_uuid : Set the cluster UUID. Defaults to value found in
                 ceph config file.
             cluster_name : Set the cluster name. Defaults to "ceph".
-            hostname : Set the hostname. Used to set mon path. Defaults to the
-                configured hostname.
     """
     return keyring_use.keyring_create_type(**kwargs)
 
@@ -261,8 +259,6 @@ def keyring_save(**kwargs):
             cluster_uuid : Set the cluster UUID. Defaults to value found in
                 ceph config file.
             cluster_name : Set the cluster name. Defaults to "ceph".
-            hostname : Set the hostname. Used to set mon path. Defaults to the
-                configured hostname.
     """
     return keyring_use.keyring_save_type(**kwargs)
 
@@ -278,8 +274,6 @@ def keyring_purge(**kwargs):
             cluster_uuid : Set the cluster UUID. Defaults to value found in
                 ceph config file.
             cluster_name : Set the cluster name. Defaults to "ceph".
-            hostname : Set the hostname. Used to set mon path. Defaults to the
-                configured hostname.
     """
     return keyring_use.keyring_purge_type(**kwargs)
 
@@ -295,8 +289,6 @@ def keyring_present(**kwargs):
             cluster_uuid : Set the cluster UUID. Defaults to value found in
                 ceph config file.
             cluster_name : Set the cluster name. Defaults to "ceph".
-            hostname : Set the hostname. Used to set mon path. Defaults to the
-                configured hostname.
     """
     return keyring_use.keyring_present_type(**kwargs)
 
@@ -312,8 +304,6 @@ def keyring_auth_add(**kwargs):
             cluster_uuid : Set the cluster UUID. Defaults to value found in
                 ceph config file.
             cluster_name : Set the cluster name. Defaults to "ceph".
-            hostname : Set the hostname. Used to set mon path. Defaults to the
-                configured hostname.
     """
     return keyring_use.keyring_auth_add_type(**kwargs)
 
@@ -330,8 +320,6 @@ def keyring_auth_del(**kwargs):
                 Set the cluster UUID. Defaults to value found in ceph config file.
             cluster_name
                 Set the cluster name. Defaults to "ceph".
-            hostname : Set the hostname. Used to set mon path. Defaults to the
-                configured hostname.
     """
     return keyring_use.keyring_auth_del_type(**kwargs)
 
@@ -397,7 +385,6 @@ def keyring_mon_create(**kwargs):
             cluster_uuid : Set the cluster UUID. Defaults to value found in
                 ceph config file.
             cluster_name : Set the cluster name. Defaults to "ceph".
-            hostname : Set the hostname. Defaults to the configured hostname.
     """
     params = dict(kwargs)
     params["keyring_type"] = "mon"
@@ -416,7 +403,6 @@ def keyring_mon_save(key_content=None, **kwargs):
             cluster_uuid : Set the cluster UUID. Defaults to value found in
                 ceph config file.
             cluster_name : Set the cluster name. Defaults to "ceph".
-            hostname : Set the hostname. Defaults to the configured hostname.
     """
     params = dict(kwargs)
     params["keyring_type"] = "mon"
@@ -436,7 +422,6 @@ def keyring_mon_purge(**kwargs):
             cluster_uuid : Set the cluster UUID. Defaults to value found in
                 ceph config file.
             cluster_name : Set the cluster name. Defaults to "ceph".
-            hostname : Set the hostname. Defaults to the configured hostname.
     """
     params = dict(kwargs)
     params["keyring_type"] = "mon"
