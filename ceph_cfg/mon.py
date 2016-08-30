@@ -200,7 +200,7 @@ class mon_implementation_base(object):
                 self.model.cluster_name,
                 self.model.hostname
             )
-        keyring_path_mon = keyring._get_path_keyring_mon_bootstrap(self.model.cluster_name, self.model.hostname)
+        keyring_path_mon = keyring._get_path_keyring_mon(self.model.cluster_name, self.model.hostname)
         path_mon_dir = "/var/lib/ceph/mon/%s-%s" % (
                 self.model.cluster_name,
                 self.model.hostname
