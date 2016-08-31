@@ -745,6 +745,20 @@ def mon_create(**kwargs):
     return mon.mon_create(**kwargs)
 
 
+def mon_destroy(**kwargs):
+    """
+    Destroy a mon node
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            mon_name : Set the mon serrvice name. Required
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+    """
+    return mon.mon_destroy(**kwargs)
+
+
 def mon_list(**kwargs):
     """
     Create a mon node
