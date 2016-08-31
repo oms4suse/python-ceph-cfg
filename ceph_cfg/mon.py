@@ -18,6 +18,7 @@ from . import utils
 from . import service
 from . import util_which
 from . import constants
+from . import ops_mon
 
 
 log = logging.getLogger(__name__)
@@ -322,6 +323,47 @@ class mon_implementation_base(object):
         return True
 
 
+    def destroy(self, **kwargs):
+        """
+        Destroy a mon node
+
+        Args:
+            **kwargs: Arbitrary keyword arguments.
+                mon_name
+                    set the mon you are destroying.
+                cluster_uuid
+                    Set the cluster UUID. Defaults to value found in ceph
+                    config file.
+                cluster_name
+                    Set the cluster name. Defaults to "ceph".
+        """
+        service_name = kwargs.get("mon_name")
+        if service_name is None:
+            raise Error("Service name for mon is not specified as 'mon_name'")
+        if util_which.which_ceph_mon.path is None:
+            raise Error("Could not find executable 'ceph-mon'")
+        # Now start the service
+        arguments = {
+            'identifier' : service_name,
+            'service' : "ceph-mon",
+        }
+        if self.init_system.is_running(**arguments):
+            self.init_system.stop(**arguments)
+        self.init_system.on_boot_disable(**arguments)
+        mon_ops = ops_mon.ops_mon(self.model)
+        mon_ops.monmap_remove(service_name)
+        service_dir = "{cluster}-{service}".format(
+            cluster=self.model.cluster_name,
+            service=service_name
+            )
+        path = os.path.join(constants._path_ceph_lib_mon, service_dir)
+        if not os.path.isdir(path):
+            return True
+        log.debug("removing mon path {path}".format(path=path))
+        shutil.rmtree(path)
+        return True
+
+
     def active(self, **kwargs):
         """
         Is mon deamon running
@@ -439,6 +481,15 @@ class mon_facard(object):
         if self._monImp is None:
             raise Error("Programming error: key type unset")
         return self._monImp.create(**kwargs)
+
+
+    def destroy(self, **kwargs):
+        """
+        Destroy mon
+        """
+        if self._monImp is None:
+            raise Error("Programming error: key type unset")
+        return self._monImp.destroy(**kwargs)
 
 
     def quorum(self, **kwargs):
@@ -565,6 +616,24 @@ def mon_create(**kwargs):
     _update_mon_model(mdl)
     ctrl_mon = mon_facard(mdl, **kwargs)
     return ctrl_mon.create(**kwargs)
+
+
+def mon_destroy(**kwargs):
+    """
+    Destroy a mon node
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            mon_name
+                set the mon you are destroying.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+    """
+    mdl = model.model(**kwargs)
+    _update_mon_model(mdl)
+    ctrl_mon = mon_facard(mdl, **kwargs)
+    return ctrl_mon.destroy(**kwargs)
 
 
 def mon_list(**kwargs):
