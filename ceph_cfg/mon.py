@@ -127,14 +127,22 @@ class mon_implementation_base(object):
         """
         Is this a mon node
 
+        mon_name
+            Set the mon service name
+
         cluster_name
             Set the cluster name. Defaults to "ceph".
 
         cluster_uuid
             Set the cluster UUID. Defaults to value found in ceph config file.
         """
-        q = mdl_query.mdl_query(self.model)
-        return q.mon_is()
+        service_name = kwargs.get("mon_name")
+        if service_name is None:
+            raise Error("Service name for mon is not specified as 'mon_name'")
+        for name, addr in self.model.mon_members:
+            if name == service_name:
+                return True
+        return False
 
 
     def status(self, **kwargs):
@@ -366,6 +374,14 @@ class mon_implementation_base(object):
             raise Error("Service name for mon is not specified as 'mon_name'")
         if util_which.which_ceph_mon.path is None:
             raise Error("Could not find executable 'ceph-mon'")
+
+        #Validate not in core mon list as this fails with a nasty error
+        if self.mon_is(**kwargs):
+            msg = """mon '{service_name}' is still in the the ceph configuration so failing to remove""".format(
+                service_name=service_name)
+            log.error(msg)
+            raise Error(msg)
+
         # Now start the service
         arguments = {
             'identifier' : service_name,
