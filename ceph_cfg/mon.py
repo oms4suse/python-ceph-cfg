@@ -528,11 +528,6 @@ def _update_mon_model(model):
     u.defaults_refresh()
     u.load_confg(model.cluster_name)
     u.mon_members_refresh()
-    q = mdl_query.mdl_query(model)
-    if not q.mon_is():
-        msg = "Host '{hostname}' is not a mon node".format(hostname=model.hostname)
-        log.error(msg)
-        raise ErrorNotMon(msg)
 
 
 def mon_is(**kwargs):
