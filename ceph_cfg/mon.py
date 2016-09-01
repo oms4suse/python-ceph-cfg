@@ -382,16 +382,7 @@ class mon_implementation_base(object):
             log.error(msg)
             raise Error(msg)
 
-        # Now start the service
-        arguments = {
-            'identifier' : service_name,
-            'service' : "ceph-mon",
-        }
-        if self.init_system.is_running(**arguments):
-            self.init_system.stop(**arguments)
-        self.init_system.on_boot_disable(**arguments)
-        mon_ops = ops_mon.ops_mon(self.model)
-        mon_ops.monmap_remove(service_name)
+        # Check the mon is local
         service_dir = "{cluster}-{service}".format(
             cluster=self.model.cluster_name,
             service=service_name
@@ -399,8 +390,24 @@ class mon_implementation_base(object):
         path = os.path.join(constants._path_ceph_lib_mon, service_dir)
         if not os.path.isdir(path):
             return True
+        # Now stop and disable the service
+        arguments = {
+            'identifier' : service_name,
+            'service' : "ceph-mon",
+        }
+        if self.init_system.is_running(**arguments):
+            self.init_system.stop(**arguments)
+        self.init_system.on_boot_disable(**arguments)
         log.debug("removing mon path {path}".format(path=path))
-        shutil.rmtree(path)
+        try:
+            shutil.rmtree(path)
+        finally:
+            # Now we can safely remove the mon from the mon map
+            # Doing this on anouther node can lead to the mon restarting to fast
+            # particulalry under systemd where it autorestarts, this consumes
+            # load and systemd prevents starting the service for 30m.
+            mon_ops = ops_mon.ops_mon(self.model)
+            mon_ops.monmap_remove(service_name)
         return True
 
 
