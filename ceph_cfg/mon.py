@@ -7,6 +7,7 @@ import pwd
 import tempfile
 import shutil
 import time
+import json
 
 # Local imports
 from . import keyring
@@ -96,6 +97,32 @@ class mon_implementation_base(object):
         return True
 
 
+
+    def _mon_status(self, **kwargs):
+        service_name = kwargs.get("mon_name")
+        if service_name is None:
+            raise Error("Service name for mon is not specified as 'mon_name'")
+        if self.model.cluster_name is None:
+            raise Error("cluster_name not set")
+        arguments = [
+            "ceph",
+            "--cluster=%s" % (self.model.cluster_name),
+            "--admin-daemon",
+            "/var/run/ceph/ceph-mon.%s.asok" % (service_name),
+            "mon_status"
+            ]
+        output = utils.execute_local_command(arguments)
+        if output["retcode"] != 0:
+            raise Error("Failed executing '%s' Error rc=%s, stdout=%s stderr=%s" % (
+                        " ".join(arguments),
+                        output["retcode"],
+                        output["stdout"],
+                        output["stderr"])
+                        )
+        self.model.mon_status = json.loads(output['stdout'])
+
+
+
     def mon_is(self, **kwargs):
         """
         Is this a mon node
@@ -120,8 +147,7 @@ class mon_implementation_base(object):
         cluster_name
             Set the cluster name. Defaults to "ceph".
         """
-        u = mdl_updater.model_updater(self.model)
-        u.mon_status()
+        self._mon_status(**kwargs)
         p = presenter.mdl_presentor(self.model)
         return p.mon_status()
 
@@ -138,8 +164,7 @@ class mon_implementation_base(object):
                 cluster_name
                     Set the cluster name. Defaults to "ceph".
         """
-        u = mdl_updater.model_updater(self.model)
-        u.mon_status()
+        self._mon_status(**kwargs)
         q = mdl_query.mdl_query(self.model)
         return q.mon_quorum()
 
@@ -150,9 +175,8 @@ class mon_implementation_base(object):
         """
         if not self.active(**kwargs):
             raise Error("mon service has died.")
-        u = mdl_updater.model_updater(self.model)
         try:
-            u.mon_status()
+            self._mon_status(**kwargs)
         except mdl_updater.Error:
             return False
         return True
