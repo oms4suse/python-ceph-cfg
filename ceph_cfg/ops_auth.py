@@ -9,7 +9,6 @@ from . import util_which
 from . import remote_connection
 from . import utils
 from . import keyring
-from . import mdl_query
 
 
 log = logging.getLogger(__name__)
@@ -88,13 +87,11 @@ class ops_auth(object):
         """
         keyringobj = keyring.keyring_facard(self.model)
         keyringobj.key_type = keyring_type
-
-
         if not keyringobj.present():
-            raise Error("rgw keyring not found")
-        q = mdl_query.mdl_query(self.model)
-        if q.mon_is() and q.mon_quorum() is False:
-            raise Error("mon daemon is not in quorum")
+            msg = "keyring of type {key_type} not found".format(
+                key_type=keyring_type)
+            log.error(msg)
+            raise Error(msg)
         prefix_arguments = [
             util_which.which_ceph.path
         ]
@@ -123,9 +120,6 @@ class ops_auth(object):
         """
         keyringobj = keyring.keyring_facard(self.model)
         keyringobj.key_type = keyring_type
-        q = mdl_query.mdl_query(self.model)
-        if q.mon_is() and q.mon_quorum() is False:
-            raise Error("mon daemon is not in quorum")
         prefix_arguments = [
             util_which.which_ceph.path
         ]
