@@ -28,14 +28,6 @@ class mdl_query():
         self.model.init = "systemd"
 
 
-    def mon_is(self):
-        if self.model.hostname is None:
-            raise Error("Programming error: Hostname not detected")
-        for hostname, addr in self.model.mon_members:
-            if hostname == self.model.hostname:
-                return True
-        return False
-
     def mon_quorum(self):
         """
         Present the monitor status
