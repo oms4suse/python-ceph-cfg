@@ -8,7 +8,6 @@ import platform
 import logging
 import shlex
 import tempfile
-import json
 try:
     import ConfigParser
 except:
@@ -412,29 +411,6 @@ class model_updater():
                     mon_initial_members_addr_cleaned[idx]
                 ))
         self.model.mon_members = output
-
-
-    def mon_status(self):
-        if self.model.hostname is None:
-            raise Error("Hostname not set")
-        if self.model.cluster_name is None:
-            raise Error("cluster_name not set")
-        arguments = [
-            "ceph",
-            "--cluster=%s" % (self.model.cluster_name),
-            "--admin-daemon",
-            "/var/run/ceph/ceph-mon.%s.asok" % (self.model.hostname),
-            "mon_status"
-            ]
-        output = utils.execute_local_command(arguments)
-        if output["retcode"] != 0:
-            raise Error("Failed executing '%s' Error rc=%s, stdout=%s stderr=%s" % (
-                        " ".join(arguments),
-                        output["retcode"],
-                        output["stdout"],
-                        output["stderr"])
-                        )
-        self.model.mon_status = json.loads(output['stdout'])
 
 
     def ceph_version_refresh(self):
