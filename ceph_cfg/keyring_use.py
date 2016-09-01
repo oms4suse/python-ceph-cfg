@@ -7,7 +7,6 @@ from . import model
 from . import mdl_updater
 from . import keyring
 from . import utils
-from . import mdl_query
 from . import ops_auth
 
 
@@ -34,9 +33,6 @@ def _update_auth_model(mdl):
     u = mdl_updater.model_updater(mdl)
     u.load_confg(mdl.cluster_name)
     u.mon_members_refresh()
-    q = mdl_query.mdl_query(mdl)
-    if q.mon_is():
-        u.mon_status()
 
 
 def keyring_create_type(**kwargs):
