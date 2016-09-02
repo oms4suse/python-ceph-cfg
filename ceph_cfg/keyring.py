@@ -27,11 +27,10 @@ class Error(Exception):
 def _get_path_keyring_admin(cluster_name):
     return '/etc/ceph/%s.client.admin.keyring' % (cluster_name)
 
-def _get_path_keyring_mon(cluster_name, host_name):
-    return os.path.join(constants._path_ceph_lib_mon, '%s-%s/keyring' % (cluster_name, host_name))
 
-def _get_path_keyring_mon_bootstrap(cluster_name, host_name):
-    return os.path.join(constants._path_ceph_lib, 'bootstrap-mon/%s-%s.keyring' % (cluster_name, host_name))
+def _get_path_keyring_mon(cluster_name):
+    # Get the path for the mon bootstrap keyring.
+    return os.path.join(constants._path_ceph_lib, 'bootstrap-mon/%s.keyring' % (cluster_name))
 
 
 def _get_path_keyring_osd(cluster_name):
@@ -219,10 +218,7 @@ class keyring_implementation_mon(keyring_implementation_base):
     def get_path_keyring(self):
         if self.model.cluster_name is None:
             raise  Error("Cluster name not found")
-        if self.model.hostname is None:
-            raise  Error("hostname not found")
-        return _get_path_keyring_mon_bootstrap(self.model.cluster_name,
-                self.model.hostname)
+        return _get_path_keyring_mon(self.model.cluster_name)
 
     def get_arguments_create(self, path, secret=None):
         return self.invoke_ceph_authtool(self.keyring_name, path, self.caps, secret=secret)

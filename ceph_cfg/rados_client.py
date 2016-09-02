@@ -56,7 +56,6 @@ class ctrl_rados_client(object):
 
     def update(self):
         self.updater = mdl_updater.model_updater(self.model)
-        self.updater.hostname_refresh()
         try:
             self.updater.defaults_refresh()
         except (utils.Error) as err:

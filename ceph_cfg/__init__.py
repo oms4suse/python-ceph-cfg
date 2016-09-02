@@ -683,9 +683,9 @@ def mon_is(**kwargs):
             cluster_uuid : Set the cluster UUID. Defaults to value found in
                 ceph config file.
             cluster_name : Set the cluster name. Defaults to "ceph".
+            hostname : Set the hostname. Defaults to the configured hostname.
     """
-    ctrl_mon = mon.mon_facard(**kwargs)
-    return ctrl_mon.is_mon()
+    return mon.mon_is(**kwargs)
 
 
 def mon_status(**kwargs):
@@ -697,9 +697,10 @@ def mon_status(**kwargs):
             cluster_uuid : Set the cluster UUID. Defaults to value found in
                 ceph config file.
             cluster_name : Set the cluster name. Defaults to "ceph".
+            hostname : Set the hostname. Defaults to the configured hostname.
     """
-    ctrl_mon = mon.mon_facard(**kwargs)
-    return ctrl_mon.status()
+    return mon.mon_status(**kwargs)
+
 
 def mon_quorum(**kwargs):
     """
@@ -710,9 +711,9 @@ def mon_quorum(**kwargs):
             cluster_uuid : Set the cluster UUID. Defaults to value found in
                 ceph config file.
             cluster_name : Set the cluster name. Defaults to "ceph".
+            hostname : Set the hostname. Defaults to the configured hostname.
     """
-    ctrl_mon = mon.mon_facard(**kwargs)
-    return ctrl_mon.quorum()
+    return mon.mon_quorum(**kwargs)
 
 
 
@@ -725,12 +726,40 @@ def mon_active(**kwargs):
             cluster_uuid : Set the cluster UUID. Defaults to value found in
                 ceph config file.
             cluster_name : Set the cluster name. Defaults to "ceph".
+            hostname : Set the hostname. Defaults to the configured hostname.
     """
-    ctrl_mon = mon.mon_facard(**kwargs)
-    return ctrl_mon.active()
+    return mon.mon_active(**kwargs)
 
 
 def mon_create(**kwargs):
+    """
+    Create a mon node
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            mon_name : Set the mon serrvice name. Required
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+    """
+    return mon.mon_create(**kwargs)
+
+
+def mon_destroy(**kwargs):
+    """
+    Destroy a mon node
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            mon_name : Set the mon serrvice name. Required
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+    """
+    return mon.mon_destroy(**kwargs)
+
+
+def mon_list(**kwargs):
     """
     Create a mon node
 
@@ -740,8 +769,7 @@ def mon_create(**kwargs):
                 ceph config file.
             cluster_name : Set the cluster name. Defaults to "ceph".
     """
-    ctrl_mon = mon.mon_facard(**kwargs)
-    return ctrl_mon.create()
+    return mon.mon_list(**kwargs)
 
 
 def rgw_pools_create(**kwargs):
@@ -834,7 +862,7 @@ def keyring_auth_list(**kwargs):
     """
     m = model.model(**kwargs)
     u = mdl_updater.model_updater(m)
-    u.hostname_refresh()
+    u.defaults_hostname()
     try:
         u.defaults_refresh()
     except:
@@ -859,7 +887,7 @@ def pool_list(**kwargs):
     """
     m = model.model(**kwargs)
     u = mdl_updater.model_updater(m)
-    u.hostname_refresh()
+    u.defaults_hostname()
     try:
         u.defaults_refresh()
     except:
@@ -891,7 +919,7 @@ def pool_add(pool_name, **kwargs):
     """
     m = model.model(**kwargs)
     u = mdl_updater.model_updater(m)
-    u.hostname_refresh()
+    u.defaults_hostname()
     u.defaults_refresh()
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()
@@ -913,7 +941,7 @@ def pool_del(pool_name, **kwargs):
     """
     m = model.model(**kwargs)
     u = mdl_updater.model_updater(m)
-    u.hostname_refresh()
+    u.defaults_hostname()
     u.defaults_refresh()
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()
@@ -931,6 +959,7 @@ def purge(**kwargs):
             cluster_uuid : Set the cluster UUID. Defaults to value found in
                 ceph config file.
             cluster_name : Set the cluster name. Defaults to "ceph".
+            hostname : Set the hostname. Defaults to the configured hostname.
     """
     m = model.model(**kwargs)
     purger.purge(m, **kwargs)
@@ -959,7 +988,7 @@ def cluster_quorum(**kwargs):
     """
     m = model.model(**kwargs)
     u = mdl_updater.model_updater(m)
-    u.hostname_refresh()
+    u.defaults_hostname()
     u.defaults_refresh()
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()
@@ -981,7 +1010,7 @@ def cluster_status(**kwargs):
     """
     m = model.model(**kwargs)
     u = mdl_updater.model_updater(m)
-    u.hostname_refresh()
+    u.defaults_hostname()
     u.defaults_refresh()
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()
@@ -1003,7 +1032,7 @@ def cephfs_ls(**kwargs):
     """
     m = model.model(**kwargs)
     u = mdl_updater.model_updater(m)
-    u.hostname_refresh()
+    u.defaults_hostname()
     u.defaults_refresh()
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()
@@ -1028,7 +1057,7 @@ def cephfs_add(fs_name, **kwargs):
     """
     m = model.model(**kwargs)
     u = mdl_updater.model_updater(m)
-    u.hostname_refresh()
+    u.defaults_hostname()
     u.defaults_refresh()
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()
@@ -1053,7 +1082,7 @@ def cephfs_del(fs_name, **kwargs):
     """
     m = model.model(**kwargs)
     u = mdl_updater.model_updater(m)
-    u.hostname_refresh()
+    u.defaults_hostname()
     u.defaults_refresh()
     u.load_confg(m.cluster_name)
     u.mon_members_refresh()

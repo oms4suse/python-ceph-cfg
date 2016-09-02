@@ -2,10 +2,12 @@
 from __future__ import absolute_import
 import logging
 import os
+import os.path
 import pwd
 import tempfile
 import shutil
 import time
+import json
 
 # Local imports
 from . import keyring
@@ -16,6 +18,8 @@ from . import presenter
 from . import utils
 from . import service
 from . import util_which
+from . import constants
+from . import ops_mon
 
 
 log = logging.getLogger(__name__)
@@ -24,11 +28,20 @@ log = logging.getLogger(__name__)
 def Property(func):
     return property(**func())
 
+
 class Error(Exception):
     """
     Error
     """
+    def __str__(self):
+        doc = self.__doc__.strip()
+        return ': '.join([doc] + [str(a) for a in self.args])
 
+
+class ErrorNotMon(Error):
+    """
+    Error when its not a mon
+    """
     def __str__(self):
         doc = self.__doc__.strip()
         return ': '.join([doc] + [str(a) for a in self.args])
@@ -84,9 +97,38 @@ class mon_implementation_base(object):
         return True
 
 
+
+    def _mon_status(self, **kwargs):
+        service_name = kwargs.get("mon_name")
+        if service_name is None:
+            raise Error("Service name for mon is not specified as 'mon_name'")
+        if self.model.cluster_name is None:
+            raise Error("cluster_name not set")
+        arguments = [
+            "ceph",
+            "--cluster=%s" % (self.model.cluster_name),
+            "--admin-daemon",
+            "/var/run/ceph/ceph-mon.%s.asok" % (service_name),
+            "mon_status"
+            ]
+        output = utils.execute_local_command(arguments)
+        if output["retcode"] != 0:
+            raise Error("Failed executing '%s' Error rc=%s, stdout=%s stderr=%s" % (
+                        " ".join(arguments),
+                        output["retcode"],
+                        output["stdout"],
+                        output["stderr"])
+                        )
+        self.model.mon_status = json.loads(output['stdout'])
+
+
+
     def mon_is(self, **kwargs):
         """
         Is this a mon node
+
+        mon_name
+            Set the mon service name
 
         cluster_name
             Set the cluster name. Defaults to "ceph".
@@ -94,16 +136,13 @@ class mon_implementation_base(object):
         cluster_uuid
             Set the cluster UUID. Defaults to value found in ceph config file.
         """
-        u = mdl_updater.model_updater(self.model)
-        u.hostname_refresh()
-        try:
-            u.defaults_refresh()
-        except:
-            return False
-        u.load_confg(self.model.cluster_name)
-        u.mon_members_refresh()
-        q = mdl_query.mdl_query(self.model)
-        return q.mon_is()
+        service_name = kwargs.get("mon_name")
+        if service_name is None:
+            raise Error("Service name for mon is not specified as 'mon_name'")
+        for name, addr in self.model.mon_members:
+            if name == service_name:
+                return True
+        return False
 
 
     def status(self, **kwargs):
@@ -116,18 +155,7 @@ class mon_implementation_base(object):
         cluster_name
             Set the cluster name. Defaults to "ceph".
         """
-        u = mdl_updater.model_updater(self.model)
-        u.hostname_refresh()
-        try:
-            u.defaults_refresh()
-        except:
-            return {}
-        u.load_confg(self.model.cluster_name)
-        u.mon_members_refresh()
-        q = mdl_query.mdl_query(self.model)
-        if not q.mon_is():
-            raise Error("Not a mon node")
-        u.mon_status()
+        self._mon_status(**kwargs)
         p = presenter.mdl_presentor(self.model)
         return p.mon_status()
 
@@ -144,35 +172,25 @@ class mon_implementation_base(object):
                 cluster_name
                     Set the cluster name. Defaults to "ceph".
         """
-        u = mdl_updater.model_updater(self.model)
-        u.hostname_refresh()
-        try:
-            u.defaults_refresh()
-        except:
-            raise Error("Could not get cluster details")
-        u.load_confg(self.model.cluster_name)
-        u.mon_members_refresh()
-        u.mon_status()
+        self._mon_status(**kwargs)
         q = mdl_query.mdl_query(self.model)
         return q.mon_quorum()
 
 
-    def _create_check_responding(self):
+    def _create_check_responding(self, **kwargs):
         """
         Check the mon service is runnign and responding.
         """
-        q = mdl_query.mdl_query(self.model)
-        if not q.mon_active():
+        if not self.active(**kwargs):
             raise Error("mon service has died.")
-        u = mdl_updater.model_updater(self.model)
         try:
-            u.mon_status()
+            self._mon_status(**kwargs)
         except mdl_updater.Error:
             return False
         return True
 
 
-    def _create_check_retry(self):
+    def _create_check_retry(self, **kwargs):
         """
         Check the mon service is started and responding with time out.
 
@@ -183,13 +201,13 @@ class mon_implementation_base(object):
         timeout = 60
         time_start = time.clock()
         time_end = time_start + timeout
-        if self._create_check_responding():
+        if self._create_check_responding(**kwargs):
             return True
         while time.clock() < time_end:
             log.info("Mon service did not start up, waiting.")
             time.sleep(5)
             log.info("Retrying mon service.")
-            if self._create_check_responding():
+            if self._create_check_responding(**kwargs):
                 return True
         log.error("Timed out starting mon service")
         raise Error("Failed to get mon service status after '%s' seconds." % (timeout))
@@ -207,41 +225,29 @@ class mon_implementation_base(object):
                 cluster_name
                     Set the cluster name. Defaults to "ceph".
         """
+        service_name = kwargs.get("mon_name")
+        if service_name is None:
+            raise Error("Service name for mon is not specified as 'mon_name'")
         if util_which.which_ceph_mon.path is None:
             raise Error("Could not find executable 'ceph-mon'")
 
-        u = mdl_updater.model_updater(self.model)
-        u.hostname_refresh()
-        u.defaults_refresh()
-        u.load_confg(self.model.cluster_name)
-        u.mon_members_refresh()
-        q = mdl_query.mdl_query(self.model)
-        if not q.mon_is():
-            raise Error("Not a mon node")
-
-        path_done_file = "/var/lib/ceph/mon/%s-%s/done" % (
+        path_mon_dir_postfix = "/%s-%s" % (
                 self.model.cluster_name,
-                self.model.hostname
+                service_name
             )
-        keyring_path_mon = keyring._get_path_keyring_mon_bootstrap(self.model.cluster_name, self.model.hostname)
-        path_mon_dir = "/var/lib/ceph/mon/%s-%s" % (
-                self.model.cluster_name,
-                self.model.hostname
-            )
-
+        path_mon_dir = constants._path_ceph_lib_mon + path_mon_dir_postfix
+        path_done_file = path_mon_dir + "/done"
         path_admin_keyring = keyring._get_path_keyring_admin(self.model.cluster_name)
+        keyring_path_mon = keyring._get_path_keyring_mon(self.model.cluster_name)
 
-        path_monmap = "/var/lib/ceph/tmp/%s.monmap" % (
-                self.model.cluster_name
-            )
         if os.path.isfile(path_done_file):
             log.debug("Mon done file exists:%s" % (path_done_file))
-            if q.mon_active():
+            if self.active(**kwargs):
                 return True
             arguments = [
                 util_which.which_systemctl.path,
                 "restart",
-                "ceph-mon@%s" % (self.model.hostname)
+                "ceph-mon@%s" % (service_name)
                 ]
             output = utils.execute_local_command(arguments)
             if output["retcode"] != 0:
@@ -253,7 +259,7 @@ class mon_implementation_base(object):
                     )
 
             # Error is servcie wont start
-            if not q.mon_active():
+            if not self.active(**kwargs):
                  raise Error("Failed to start monitor")
             return True
 
@@ -316,7 +322,7 @@ class mon_implementation_base(object):
                     util_which.which_ceph_mon.path,
                     "--mkfs",
                     "-i",
-                    self.model.hostname,
+                    service_name,
                     "--monmap",
                     path_monmap,
                     '--keyring',
@@ -336,12 +342,12 @@ class mon_implementation_base(object):
                 raise Error("Failed to create '%s'" % (path_mon_key))
             # Now start the service
             arguments = {
-                'identifier' : self.model.hostname,
+                'identifier' : service_name,
                 'service' : "ceph-mon",
             }
             self.init_system.restart(**arguments)
             self.init_system.on_boot_enable(**arguments)
-            self._create_check_retry()
+            self._create_check_retry(**kwargs)
             open(path_done_file, 'a').close()
         finally:
             log.info("Destroy temp directory %s" %(tmpd))
@@ -349,14 +355,101 @@ class mon_implementation_base(object):
         return True
 
 
+    def destroy(self, **kwargs):
+        """
+        Destroy a mon node
+
+        Args:
+            **kwargs: Arbitrary keyword arguments.
+                mon_name
+                    set the mon you are destroying.
+                cluster_uuid
+                    Set the cluster UUID. Defaults to value found in ceph
+                    config file.
+                cluster_name
+                    Set the cluster name. Defaults to "ceph".
+        """
+        service_name = kwargs.get("mon_name")
+        if service_name is None:
+            raise Error("Service name for mon is not specified as 'mon_name'")
+        if util_which.which_ceph_mon.path is None:
+            raise Error("Could not find executable 'ceph-mon'")
+
+        #Validate not in core mon list as this fails with a nasty error
+        if self.mon_is(**kwargs):
+            msg = """mon '{service_name}' is still in the the ceph configuration so failing to remove""".format(
+                service_name=service_name)
+            log.error(msg)
+            raise Error(msg)
+
+        # Check the mon is local
+        service_dir = "{cluster}-{service}".format(
+            cluster=self.model.cluster_name,
+            service=service_name
+            )
+        path = os.path.join(constants._path_ceph_lib_mon, service_dir)
+        if not os.path.isdir(path):
+            return True
+        # Now stop and disable the service
+        arguments = {
+            'identifier' : service_name,
+            'service' : "ceph-mon",
+        }
+        if self.init_system.is_running(**arguments):
+            self.init_system.stop(**arguments)
+        self.init_system.on_boot_disable(**arguments)
+        log.debug("removing mon path {path}".format(path=path))
+        try:
+            shutil.rmtree(path)
+        finally:
+            # Now we can safely remove the mon from the mon map
+            # Doing this on anouther node can lead to the mon restarting to fast
+            # particulalry under systemd where it autorestarts, this consumes
+            # load and systemd prevents starting the service for 30m.
+            mon_ops = ops_mon.ops_mon(self.model)
+            mon_ops.monmap_remove(service_name)
+        return True
+
+
     def active(self, **kwargs):
         """
         Is mon deamon running
         """
-        u = mdl_updater.model_updater(self.model)
-        u.hostname_refresh()
-        q = mdl_query.mdl_query(self.model)
-        return q.mon_active()
+        service_name = kwargs.get("mon_name")
+        if service_name is None:
+            raise Error("Service name for mon is not specified as 'mon_name'")
+        arguments = {
+                'identifier' : service_name,
+                'service' : "ceph-mon",
+            }
+        init_system = service.init_system(init_type=self.model.init)
+        return init_system.is_running(**arguments)
+
+
+    def list(self, **kwargs):
+        """
+        Update model of local mons
+        """
+        subdirs = []
+        for dir_entry in os.listdir(constants._path_ceph_lib_mon):
+            path = os.path.join(constants._path_ceph_lib_mon, dir_entry)
+            if not os.path.isdir(path):
+                continue
+            subdirs.append(dir_entry)
+        mon_services = {}
+        for directory in subdirs:
+            dir_split = directory.split('-')
+            if len(dir_split) == 1:
+                log.warning("mon directory is invalid")
+                continue
+            head = dir_split[0]
+            tail = '-'.join(dir_split[1:])
+            if not head in mon_services:
+                mon_services[head] = [tail]
+            else:
+                mon_services[head].append(tail)
+        self.model.mon_local_services = mon_services
+        return self.model.mon_local_services
 
 
 class mod_user_root(mon_implementation_base):
@@ -384,8 +477,8 @@ class mod_user_ceph(mon_implementation_base):
 
 
 class mon_facard(object):
-    def __init__(self, **kwargs):
-        self.model = model.model(**kwargs)
+    def __init__(self, model, **kwargs):
+        self.model = model
         self._clear_implementation()
         u = mdl_updater.model_updater(self.model)
         u.ceph_version_refresh()
@@ -437,6 +530,15 @@ class mon_facard(object):
         return self._monImp.create(**kwargs)
 
 
+    def destroy(self, **kwargs):
+        """
+        Destroy mon
+        """
+        if self._monImp is None:
+            raise Error("Programming error: key type unset")
+        return self._monImp.destroy(**kwargs)
+
+
     def quorum(self, **kwargs):
         if self._monImp is None:
             raise Error("Programming error: key type unset")
@@ -459,3 +561,134 @@ class mon_facard(object):
         if self._monImp is None:
             raise Error("Programming error: key type unset")
         return self._monImp.active(**kwargs)
+
+
+    def list(self, **kwargs):
+        if self._monImp is None:
+            raise Error("Programming error: key type unset")
+        return self._monImp.list(**kwargs)
+
+
+def _update_mon_model(model):
+    u = mdl_updater.model_updater(model)
+    u.defaults_hostname()
+    u.defaults_refresh()
+    u.load_confg(model.cluster_name)
+    u.mon_members_refresh()
+
+
+def mon_is(**kwargs):
+    """
+    Is this a mon node
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+    """
+    mdl = model.model(**kwargs)
+    try:
+        _update_mon_model(mdl)
+    except ErrorNotMon:
+        return False
+    ctrl_mon = mon_facard(mdl, **kwargs)
+    return ctrl_mon.is_mon()
+
+
+def mon_status(**kwargs):
+    """
+    Get status from mon deamon
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+    """
+    mdl = model.model(**kwargs)
+    _update_mon_model(mdl)
+    ctrl_mon = mon_facard(mdl, **kwargs)
+    return ctrl_mon.status()
+
+
+def mon_quorum(**kwargs):
+    """
+    Is mon deamon in quorum
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+    """
+    mdl = model.model(**kwargs)
+    _update_mon_model(mdl)
+    ctrl_mon = mon_facard(mdl, **kwargs)
+    return ctrl_mon.quorum()
+
+
+def mon_active(**kwargs):
+    """
+    Is mon deamon running
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+    """
+    mdl = model.model(**kwargs)
+    _update_mon_model(mdl)
+    ctrl_mon = mon_facard(mdl, **kwargs)
+    return ctrl_mon.active()
+
+
+def mon_create(**kwargs):
+    """
+    Create a mon node
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+    """
+    mdl = model.model(**kwargs)
+    _update_mon_model(mdl)
+    ctrl_mon = mon_facard(mdl, **kwargs)
+    return ctrl_mon.create(**kwargs)
+
+
+def mon_destroy(**kwargs):
+    """
+    Destroy a mon node
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            mon_name
+                set the mon you are destroying.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+    """
+    mdl = model.model(**kwargs)
+    _update_mon_model(mdl)
+    ctrl_mon = mon_facard(mdl, **kwargs)
+    return ctrl_mon.destroy(**kwargs)
+
+
+def mon_list(**kwargs):
+    """
+    Create a mon node
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_uuid : Set the cluster UUID. Defaults to value found in
+                ceph config file.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+    """
+    mdl = model.model(**kwargs)
+    _update_mon_model(mdl)
+    ctrl_mon = mon_facard(mdl, **kwargs)
+    return ctrl_mon.list()

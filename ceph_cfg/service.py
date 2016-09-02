@@ -186,6 +186,7 @@ class init_system_systemd():
                     )
         return True
 
+
     def restart(self, **kwargs):
         systemctl_name = self._get_systemctl_name(**kwargs)
         arguments = [
@@ -195,12 +196,14 @@ class init_system_systemd():
             ]
         output = utils.execute_local_command(arguments)
         if output["retcode"] != 0:
-            raise init_exception_service("failed to restart '%s' Error rc=%s, stdout=%s stderr=%s" % (
-                    systemctl_name,
-                    output["retcode"],
-                    output["stdout"],
-                    output["stderr"])
-                    )
+            msg = "failed to restart '{systemctl_name}' Error rc={rc}, stdout={stdout} stderr={stderr}".format(
+                    systemctl_name=systemctl_name,
+                    rc=output["retcode"],
+                    stdout=output["stdout"],
+                    stderr=output["stderr"]
+                )
+            log.error(msg)
+            raise init_exception_service(msg)
         return True
 
 
