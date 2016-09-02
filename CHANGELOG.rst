@@ -1,8 +1,15 @@
+0.1.9
+-----
+* Add OSD reweight method.
+    Aid's graceful decommissioning OSD.
+* Add cephfs commands to allow adding removing and listing cephfs instances.
+* Code refactoring to improve maintainability of cluster level operations.
+
 0.1.8
 -----
 * Fix error messages for parsing ceph.conf.
 * Avoid side effect of not being mon node.
-* util.which fixes for runnign under salt.
+* util.which fixes for running under salt.
 * Add tox testing for python3.
 
 0.1.7
