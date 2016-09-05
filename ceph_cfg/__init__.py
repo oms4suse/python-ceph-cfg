@@ -25,6 +25,13 @@ from . import ops_cluster
 from . import keyring_use
 from . import ops_osd
 
+
+try: # check whether python knows about 'basestring'
+   basestring
+except NameError: # no, it doesn't (it's Python3); use 'str' instead
+   basestring=str
+
+
 log = logging.getLogger(__name__)
 
 
@@ -229,6 +236,43 @@ def osd_reweight(**kwargs):
         Setting the weight to 0 will drain an OSD.
     """
     return ops_osd.reweight(**kwargs)
+
+
+def osd_df(**kwargs):
+    """
+    OSD disk space
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+            cluster_uuid : Set the cluster date will be added too. Defaults to
+                the value found in local config.
+            osd_number : OSD number to query.
+    """
+    osd_number_input = kwargs.get("osd_number")
+    if osd_number_input is None:
+        raise Error("osd_number is not specified")
+    osd_number_as_int = None
+    if isinstance(osd_number_input, int):
+        osd_number_as_int = osd_number_input
+    if isinstance(osd_number_input, basestring):
+        osd_number_as_int = int(osd_number_input.strip())
+    if osd_number_as_int is None:
+        raise Error("osd_number could not be converted to int")
+    mdl = model.model(**kwargs)
+    u = mdl_updater.model_updater(mdl)
+    u.symlinks_refresh()
+    u.defaults_refresh()
+    u.partitions_all_refresh()
+    u.discover_partitions_refresh()
+    u.defaults_refresh()
+    u.load_confg(mdl.cluster_name)
+    u.mon_members_refresh()
+    # Validate input
+    cluster_ops = ops_cluster.ops_cluster(mdl)
+    cluster_ops.df()
+    p = presenter.mdl_presentor(mdl)
+    return p.df_osd(osd_number_as_int)
 
 
 def keyring_create(**kwargs):
@@ -1040,6 +1084,32 @@ def cephfs_ls(**kwargs):
     cephfs_ops.cephfs_list()
     p = presenter.mdl_presentor(m)
     return p.cephfs_list()
+
+
+def cluster_df(**kwargs):
+    """
+    Cluster disk space
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            cluster_name : Set the cluster name. Defaults to "ceph".
+            cluster_uuid : Set the cluster date will be added too. Defaults to
+                the value found in local config.
+    """
+    mdl = model.model(**kwargs)
+    u = mdl_updater.model_updater(mdl)
+    u.symlinks_refresh()
+    u.defaults_refresh()
+    u.partitions_all_refresh()
+    u.discover_partitions_refresh()
+    u.defaults_refresh()
+    u.load_confg(mdl.cluster_name)
+    u.mon_members_refresh()
+    # Validate input
+    cluster_ops = ops_cluster.ops_cluster(mdl)
+    cluster_ops.df()
+    p = presenter.mdl_presentor(mdl)
+    return p.df()
 
 
 def cephfs_add(fs_name, **kwargs):
