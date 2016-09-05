@@ -3,6 +3,16 @@ import logging
 log = logging.getLogger(__name__)
 
 
+class Error(Exception):
+    """
+    Error
+    """
+
+    def __str__(self):
+        doc = self.__doc__.strip()
+        return ': '.join([doc] + [str(a) for a in self.args])
+
+
 class mdl_presentor():
     """
     Since presentation should be clean to the end user
@@ -349,3 +359,21 @@ class mdl_presentor():
 
     def cephfs_list(self):
         return self.model.cephfs_list
+
+
+    def df_osd(self, osd_number):
+        if self.model.cluster_df is None:
+            msg = "Programming error : self.model.cluster_df is None"
+            log.error(msg)
+            raise(msg)
+        osd_details = self.model.cluster_df.get("osd")
+        if osd_details is None:
+            msg = "Programming error : self.model.cluster_df[osd] is None"
+            log.error(msg)
+            raise(msg)
+        details = osd_details.get(osd_number)
+        if details is None:
+            msg = "Osd '{number}' not found".format(number=osd_number)
+            log.error(msg)
+            raise(msg)
+        return details
