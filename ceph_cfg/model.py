@@ -58,6 +58,8 @@ class model(object):
         self.mon_status = None
         # Remote connection details
         self.connection = connection()
+        # Stores safe version of 'ceph osd df'
+        self.cluster_df = None
 
 
     def kargs_apply(self, **kwargs):
