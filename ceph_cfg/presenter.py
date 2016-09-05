@@ -377,3 +377,11 @@ class mdl_presentor():
             log.error(msg)
             raise(msg)
         return details
+
+
+    def df(self):
+        if self.model.cluster_df is None:
+            msg = "Programming error : self.model.cluster_df is None"
+            log.error(msg)
+            raise(msg)
+        return self.model.cluster_df
