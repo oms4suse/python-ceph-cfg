@@ -1,7 +1,14 @@
+0.2.0
+-----
+* Add new mon methods to allow life cycling mon roles.
+  + mon_destroy
+  + mon_list
+* API change for mon_create require mon_name argument.
+
 0.1.9
 -----
 * Add OSD reweight method.
-    Aid's graceful decommissioning OSD.
+    required for graceful decommissioning OSD.
 * Add cephfs commands to allow adding removing and listing cephfs instances.
 * Code refactoring to improve maintainability of cluster level operations.
 
