@@ -625,7 +625,7 @@ def mon_quorum(**kwargs):
     mdl = model.model(**kwargs)
     _update_mon_model(mdl)
     ctrl_mon = mon_facard(mdl, **kwargs)
-    return ctrl_mon.quorum()
+    return ctrl_mon.quorum(**kwargs)
 
 
 def mon_active(**kwargs):
@@ -641,7 +641,7 @@ def mon_active(**kwargs):
     mdl = model.model(**kwargs)
     _update_mon_model(mdl)
     ctrl_mon = mon_facard(mdl, **kwargs)
-    return ctrl_mon.active()
+    return ctrl_mon.active(**kwargs)
 
 
 def mon_create(**kwargs):
