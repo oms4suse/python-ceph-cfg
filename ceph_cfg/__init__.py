@@ -680,10 +680,10 @@ def mon_is(**kwargs):
 
     Args:
         **kwargs: Arbitrary keyword arguments.
+            mon_name : Set the mon_name.
             cluster_uuid : Set the cluster UUID. Defaults to value found in
                 ceph config file.
             cluster_name : Set the cluster name. Defaults to "ceph".
-            hostname : Set the hostname. Defaults to the configured hostname.
     """
     return mon.mon_is(**kwargs)
 
@@ -694,10 +694,10 @@ def mon_status(**kwargs):
 
     Args:
         **kwargs: Arbitrary keyword arguments.
+            mon_name : Set the mon_name.
             cluster_uuid : Set the cluster UUID. Defaults to value found in
                 ceph config file.
             cluster_name : Set the cluster name. Defaults to "ceph".
-            hostname : Set the hostname. Defaults to the configured hostname.
     """
     return mon.mon_status(**kwargs)
 
@@ -708,10 +708,10 @@ def mon_quorum(**kwargs):
 
     Args:
         **kwargs: Arbitrary keyword arguments.
+            mon_name : Set the mon_name.
             cluster_uuid : Set the cluster UUID. Defaults to value found in
                 ceph config file.
             cluster_name : Set the cluster name. Defaults to "ceph".
-            hostname : Set the hostname. Defaults to the configured hostname.
     """
     return mon.mon_quorum(**kwargs)
 
@@ -723,10 +723,10 @@ def mon_active(**kwargs):
 
     Args:
         **kwargs: Arbitrary keyword arguments.
+            mon_name : Set the mon_name.
             cluster_uuid : Set the cluster UUID. Defaults to value found in
                 ceph config file.
             cluster_name : Set the cluster name. Defaults to "ceph".
-            hostname : Set the hostname. Defaults to the configured hostname.
     """
     return mon.mon_active(**kwargs)
 
