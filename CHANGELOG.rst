@@ -3,7 +3,12 @@
 * Add new mon methods to allow life cycling mon roles.
   + mon_destroy
   + mon_list
-* API change for mon_create require mon_name argument.
+* API change for mon methods require mon_name argument.
+  + mon_is
+  + mon_status
+  + mon_quorum
+  + mon_active
+  + mon_create
 
 0.1.9
 -----
