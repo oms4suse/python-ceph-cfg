@@ -1,3 +1,8 @@
+0.2.1
+-----
+* Bugfix with mon_status.
+* Generate junit test results when running tox by default.
+
 0.2.0
 -----
 * Add new mon methods to allow life cycling mon roles.
