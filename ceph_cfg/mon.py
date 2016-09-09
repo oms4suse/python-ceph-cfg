@@ -609,7 +609,7 @@ def mon_status(**kwargs):
     mdl = model.model(**kwargs)
     _update_mon_model(mdl)
     ctrl_mon = mon_facard(mdl, **kwargs)
-    return ctrl_mon.status()
+    return ctrl_mon.status(**kwargs)
 
 
 def mon_quorum(**kwargs):
