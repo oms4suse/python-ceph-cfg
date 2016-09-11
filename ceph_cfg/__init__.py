@@ -141,7 +141,7 @@ def zap(dev = None, **kwargs):
         # isn't too thorough.
         lba_size = 4096
         size = 33 * lba_size
-        with file(dev, 'wb') as dev_file:
+        with open(dev, 'wb') as dev_file:
             dev_file.seek(-size, os.SEEK_END)
             dev_file.write(size*'\0')
 
