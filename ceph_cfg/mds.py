@@ -75,9 +75,6 @@ class mds_ctrl(rados_client.ctrl_rados_client):
 
     def prepare(self):
         self.service_available()
-        path_bootstrap_keyring = keyring._get_path_keyring_mds(self.model.cluster_name)
-        if not os.path.isfile(path_bootstrap_keyring):
-            raise Error("Keyring not found at %s" % (path_bootstrap_keyring))
         if not os.path.isdir(self.model.path_systemd_env):
             log.info("mkdir %s" % (self.model.path_systemd_env))
             os.makedirs(self.model.path_systemd_env)
