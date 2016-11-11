@@ -220,9 +220,11 @@ class osd_ctrl(object):
             raise Error("osd_dev not specified")
 
         # Check boot strap key exists
-        bootstrap_path_osd = keyring._get_path_keyring_osd(cluster_name)
-        if not os.path.isfile(bootstrap_path_osd):
-            raise Error(bootstrap_path_osd)
+        keyring_facard = keyring.keyring_facard(self.model)
+        keyring_facard.key_type = "osd"
+        if not keyring_facard.present():
+            bootstrap_path_osd = keyring_facard.keyring_path_get()
+            raise Error("Keyring not found at %s" % (bootstrap_path_osd))
         if not os.path.isdir(constants._path_ceph_lib_osd):
             log.info("mkdir %s")
             os.makedirs(constants._path_ceph_lib_osd)
