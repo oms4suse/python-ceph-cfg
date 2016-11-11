@@ -237,8 +237,11 @@ class mon_implementation_base(object):
             )
         path_mon_dir = constants._path_ceph_lib_mon + path_mon_dir_postfix
         path_done_file = path_mon_dir + "/done"
-        path_admin_keyring = keyring._get_path_keyring_admin(self.model.cluster_name)
-        keyring_path_mon = keyring._get_path_keyring_mon(self.model.cluster_name)
+        keyring_facard = keyring.keyring_facard(self.model)
+        keyring_facard.key_type = "admin"
+        path_admin_keyring = keyring_facard.keyring_path_get()
+        keyring_facard.key_type = "mon"
+        keyring_path_mon = keyring_facard.keyring_path_get()
 
         if os.path.isfile(path_done_file):
             log.debug("Mon done file exists:%s" % (path_done_file))
