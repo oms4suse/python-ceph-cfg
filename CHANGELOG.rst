@@ -1,3 +1,14 @@
+0.2.2
+-----
+* Bugfix when the cluster is down and remote operations are requested.
+  + All remote now provide a clear exception when the cluster cannot be 
+    reached securely.
+* Added more unit tests.
+  + Keyring operations.
+  + Remote operations.
+* The python builtin method 'file' is deprecated and should not be used.
+  + This fix for tox when running latest version of python3.
+
 0.2.1
 -----
 * Bugfix with mon_status.
