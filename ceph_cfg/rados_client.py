@@ -158,6 +158,9 @@ class ctrl_rados_client(object):
         log.info("Make missing keyring:%s" % (self.keyring_service_path))
         keyringobj = keyring.keyring_facard(self.model)
         keyringobj.key_type = self.bootstrap_keyring_type
+        if not keyringobj.present():
+            path_bootstrap_keyring = keyringobj.keyring_path_get()
+            raise Error("Keyring not found at %s" % (path_bootstrap_keyring))
         oldmask = os.umask(int('077', 8))
         try:
             try:
