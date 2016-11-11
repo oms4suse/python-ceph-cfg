@@ -61,3 +61,13 @@ class Test_util_configparser(object):
         config.read(file_name)
         value = config.get("mysqld", "user_2")
         assert value == "mysql"
+
+
+    def test_no_global_section(self):
+        config = ConfigParser()
+        file_name = os.path.join(self.test_dir,"file")
+        with open(file_name, 'wt') as fp:
+            fp.write("user2 = mysql")
+        config.read(file_name)
+        value = config.get("global", "user2")
+        assert value == "mysql"
