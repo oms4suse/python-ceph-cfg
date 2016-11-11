@@ -37,7 +37,7 @@ class connection():
     def arguments_get(self):
         if not self.has_connected():
             self.connect()
-        if self.has_connected:
+        if self.has_connected():
             return [
                     '--connect-timeout',
                     '%s' % (constants.ceph_remote_call_timeout),
