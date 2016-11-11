@@ -95,9 +95,6 @@ class rgw_ctrl(rados_client.ctrl_rados_client):
             raise Error("rgw name must start with 'rgw.'")
         self.service_available()
         self._set_rgw_path_lib()
-        path_bootstrap_keyring = keyring._get_path_keyring_rgw(self.model.cluster_name)
-        if not os.path.isfile(path_bootstrap_keyring):
-            raise Error("Keyring not found at %s" % (path_bootstrap_keyring))
         if not os.path.isdir(self.rgw_path_lib):
             log.info("Make missing directory:%s" % (self.rgw_path_lib))
             os.makedirs(self.rgw_path_lib)
