@@ -1,7 +1,12 @@
+0.2.3
+-----
+* Bugfix correctly handle ceph conf files without a section as if they
+  had a global section.
+
 0.2.2
 -----
 * Bugfix when the cluster is down and remote operations are requested.
-  + All remote now provide a clear exception when the cluster cannot be 
+  + All remote now provide a clear exception when the cluster cannot be
     reached securely.
 * Added more unit tests.
   + Keyring operations.
