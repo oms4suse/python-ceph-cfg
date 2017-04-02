@@ -1,3 +1,7 @@
+0.2.4
+-----
+* Use pytest in setup.py and not tox
+
 0.2.3
 -----
 * Bugfix correctly handle ceph conf files without a section as if they
